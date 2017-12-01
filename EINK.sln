@@ -3,23 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BandwidthTester", "BandwidthTester\BandwidthTester.csproj", "{76BE1A46-8074-4BC2-9C45-54A45FEA9460}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BandwidthArduinoTester", "BandwidthArduinoTester\BandwidthArduinoTester.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EINK_RECEIVER", "EINK_RECEIVER\EINK_RECEIVER.vcxproj", "{7378560E-8DAB-4801-98D2-8AD96E0DC718}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EINK_DEBUG", "EINK_DEBUG\EINK_DEBUG.csproj", "{5D927C57-EDE9-4E9C-ABDB-7183E261035A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrayScaleConverter", "GrayScaleConverter\GrayScaleConverter.csproj", "{693BFE85-7DA2-476F-95E3-801CB72D0F6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrayScaleConverter", "Common\GrayScaleConverter\GrayScaleConverter.csproj", "{693BFE85-7DA2-476F-95E3-801CB72D0F6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrayScaleBenchmark", "GrayScaleBenchmark\GrayScaleBenchmark.csproj", "{D0AE97A7-36BA-48FF-AAA3-175334069C6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterStandalone", "MasterStandalone\MasterStandalone.csproj", "{60839888-144C-414D-B323-258AB5A46B2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenConnection", "ScreenConnection\ScreenConnection.csproj", "{D3DD47A1-14B8-4190-A7B2-67DF3E612457}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenConnection", "Common\ScreenConnection\ScreenConnection.csproj", "{D3DD47A1-14B8-4190-A7B2-67DF3E612457}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EINK_RECEIVER_RPIZ", "EINK_RECEIVER_RPIZ\EINK_RECEIVER_RPIZ.vcxproj", "{608CFA0C-AAA4-4C07-9319-E4793E7E0D2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5A646CAE-E720-48F0-BD22-3066240BF6E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,46 +25,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Debug|ARM.Build.0 = Debug|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Debug|x86.Build.0 = Debug|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Release|Any CPU.Build.0 = Release|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Release|ARM.ActiveCfg = Release|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Release|ARM.Build.0 = Release|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Release|x86.ActiveCfg = Release|Any CPU
-		{76BE1A46-8074-4BC2-9C45-54A45FEA9460}.Release|x86.Build.0 = Release|Any CPU
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Debug|ARM.ActiveCfg = Debug|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Debug|x86.ActiveCfg = Debug|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Debug|x86.Build.0 = Debug|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Release|Any CPU.ActiveCfg = Release|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Release|ARM.ActiveCfg = Release|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Release|x86.ActiveCfg = Release|Win32
-		{7378560E-8DAB-4801-98D2-8AD96E0DC718}.Release|x86.Build.0 = Release|Win32
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Debug|ARM.Build.0 = Debug|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Debug|x86.Build.0 = Debug|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Release|ARM.ActiveCfg = Release|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Release|ARM.Build.0 = Release|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Release|x86.ActiveCfg = Release|Any CPU
-		{5D927C57-EDE9-4E9C-ABDB-7183E261035A}.Release|x86.Build.0 = Release|Any CPU
 		{693BFE85-7DA2-476F-95E3-801CB72D0F6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{693BFE85-7DA2-476F-95E3-801CB72D0F6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{693BFE85-7DA2-476F-95E3-801CB72D0F6E}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -130,5 +84,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{693BFE85-7DA2-476F-95E3-801CB72D0F6E} = {5A646CAE-E720-48F0-BD22-3066240BF6E5}
+		{D3DD47A1-14B8-4190-A7B2-67DF3E612457} = {5A646CAE-E720-48F0-BD22-3066240BF6E5}
 	EndGlobalSection
 EndGlobal
