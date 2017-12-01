@@ -1,0 +1,916 @@
+﻿<Window x:Class="MasterStandalone.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MasterStandalone"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1000">
+    <Window.Resources>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD"/>
+        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
+        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
+        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
+        <Style x:Key="disabledAndCheckedButton" TargetType="{x:Type ToggleButton}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Button.IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsChecked" Value="False" />
+                                    <Condition Property="IsEnabled" Value="False" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsChecked" Value="True" />
+                                    <Condition Property="IsEnabled" Value="False" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <TabControl HorizontalAlignment="Left" Height="620" Margin="10,39,0,0" VerticalAlignment="Top" Width="972">
+            <TabItem Header="Settings">
+                <Grid Background="#FFFFFFFF">
+                    <GroupBox Header="Power" HorizontalAlignment="Left" Height="182" Margin="10,143,0,0" VerticalAlignment="Top" Width="223">
+                        <Grid>
+                            <GroupBox Header="Status" HorizontalAlignment="Left" Height="119" Margin="10,10,0,0" VerticalAlignment="Top" Width="136">
+                                <Grid>
+                                    <Ellipse x:Name="indPowerSource" Fill="Gray" HorizontalAlignment="Left" Height="20" Margin="10,10,0,0" Stroke="Black" VerticalAlignment="Top" Width="20"/>
+                                    <Label Content="Source" HorizontalAlignment="Left" Margin="40,7,0,0" VerticalAlignment="Top"/>
+                                    <Ellipse x:Name="indPowerGate" Fill="Gray" HorizontalAlignment="Left" Height="20" Margin="10,41,0,0" Stroke="Black" VerticalAlignment="Top" Width="20"/>
+                                    <Label Content="Gate" HorizontalAlignment="Left" Margin="40,38,0,0" VerticalAlignment="Top"/>
+                                    <Ellipse x:Name="indPowerV3P3" Fill="Gray" HorizontalAlignment="Left" Height="20" Margin="10,72,0,0" Stroke="Black" VerticalAlignment="Top" Width="20"/>
+                                    <Label Content="V3P3" HorizontalAlignment="Left" Margin="40,69,0,0" VerticalAlignment="Top"/>
+                                </Grid>
+                            </GroupBox>
+                            <Button x:Name="btnPowerRefresh" Content="Refresh" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Width="136" Click="btnPowerRefresh_Click"/>
+                            <Button x:Name="btnPowerON" Content="ON" HorizontalAlignment="Left" Margin="151,23,0,0" VerticalAlignment="Top" Width="50" Height="41" Click="btnPowerON_Click"/>
+                            <Button x:Name="btnPowerOFF" Content="OFF" HorizontalAlignment="Left" Margin="151,69,0,0" VerticalAlignment="Top" Width="50" Height="40" Click="btnPowerOFF_Click"/>
+                            <Button x:Name="btnPowerToggle" Content="Toggle" HorizontalAlignment="Left" Margin="151,114,0,0" VerticalAlignment="Top" Width="50" Height="40" Click="btnPowerToggle_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="VCOM" HorizontalAlignment="Left" Height="90" Margin="280,10,0,0" VerticalAlignment="Top" Width="186">
+                        <Grid>
+                            <ComboBox HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Width="154" Name="cmbxVCOM">
+                                <ListBoxItem Content="0 mV" Uid="0"/>
+                                <ListBoxItem Content="-10 mV" Uid="-10"/>
+                                <ListBoxItem Content="-20 mV" Uid="-20"/>
+                                <ListBoxItem Content="-30 mV" Uid="-30"/>
+                                <ListBoxItem Content="-40 mV" Uid="-40"/>
+                                <ListBoxItem Content="-50 mV" Uid="-50"/>
+                                <ListBoxItem Content="-60 mV" Uid="-60"/>
+                                <ListBoxItem Content="-70 mV" Uid="-70"/>
+                                <ListBoxItem Content="-80 mV" Uid="-80"/>
+                                <ListBoxItem Content="-90 mV" Uid="-90"/>
+                                <ListBoxItem Content="-100 mV" Uid="-100"/>
+                                <ListBoxItem Content="-110 mV" Uid="-110"/>
+                                <ListBoxItem Content="-120 mV" Uid="-120"/>
+                                <ListBoxItem Content="-130 mV" Uid="-130"/>
+                                <ListBoxItem Content="-140 mV" Uid="-140"/>
+                                <ListBoxItem Content="-150 mV" Uid="-150"/>
+                                <ListBoxItem Content="-160 mV" Uid="-160"/>
+                                <ListBoxItem Content="-170 mV" Uid="-170"/>
+                                <ListBoxItem Content="-180 mV" Uid="-180"/>
+                                <ListBoxItem Content="-190 mV" Uid="-190"/>
+                                <ListBoxItem Content="-200 mV" Uid="-200"/>
+                                <ListBoxItem Content="-210 mV" Uid="-210"/>
+                                <ListBoxItem Content="-220 mV" Uid="-220"/>
+                                <ListBoxItem Content="-230 mV" Uid="-230"/>
+                                <ListBoxItem Content="-240 mV" Uid="-240"/>
+                                <ListBoxItem Content="-250 mV" Uid="-250"/>
+                                <ListBoxItem Content="-260 mV" Uid="-260"/>
+                                <ListBoxItem Content="-270 mV" Uid="-270"/>
+                                <ListBoxItem Content="-280 mV" Uid="-280"/>
+                                <ListBoxItem Content="-290 mV" Uid="-290"/>
+                                <ListBoxItem Content="-300 mV" Uid="-300"/>
+                                <ListBoxItem Content="-310 mV" Uid="-310"/>
+                                <ListBoxItem Content="-320 mV" Uid="-320"/>
+                                <ListBoxItem Content="-330 mV" Uid="-330"/>
+                                <ListBoxItem Content="-340 mV" Uid="-340"/>
+                                <ListBoxItem Content="-350 mV" Uid="-350"/>
+                                <ListBoxItem Content="-360 mV" Uid="-360"/>
+                                <ListBoxItem Content="-370 mV" Uid="-370"/>
+                                <ListBoxItem Content="-380 mV" Uid="-380"/>
+                                <ListBoxItem Content="-390 mV" Uid="-390"/>
+                                <ListBoxItem Content="-400 mV" Uid="-400"/>
+                                <ListBoxItem Content="-410 mV" Uid="-410"/>
+                                <ListBoxItem Content="-420 mV" Uid="-420"/>
+                                <ListBoxItem Content="-430 mV" Uid="-430"/>
+                                <ListBoxItem Content="-440 mV" Uid="-440"/>
+                                <ListBoxItem Content="-450 mV" Uid="-450"/>
+                                <ListBoxItem Content="-460 mV" Uid="-460"/>
+                                <ListBoxItem Content="-470 mV" Uid="-470"/>
+                                <ListBoxItem Content="-480 mV" Uid="-480"/>
+                                <ListBoxItem Content="-490 mV" Uid="-490"/>
+                                <ListBoxItem Content="-500 mV" Uid="-500"/>
+                                <ListBoxItem Content="-510 mV" Uid="-510"/>
+                                <ListBoxItem Content="-520 mV" Uid="-520"/>
+                                <ListBoxItem Content="-530 mV" Uid="-530"/>
+                                <ListBoxItem Content="-540 mV" Uid="-540"/>
+                                <ListBoxItem Content="-550 mV" Uid="-550"/>
+                                <ListBoxItem Content="-560 mV" Uid="-560"/>
+                                <ListBoxItem Content="-570 mV" Uid="-570"/>
+                                <ListBoxItem Content="-580 mV" Uid="-580"/>
+                                <ListBoxItem Content="-590 mV" Uid="-590"/>
+                                <ListBoxItem Content="-600 mV" Uid="-600"/>
+                                <ListBoxItem Content="-610 mV" Uid="-610"/>
+                                <ListBoxItem Content="-620 mV" Uid="-620"/>
+                                <ListBoxItem Content="-630 mV" Uid="-630"/>
+                                <ListBoxItem Content="-640 mV" Uid="-640"/>
+                                <ListBoxItem Content="-650 mV" Uid="-650"/>
+                                <ListBoxItem Content="-660 mV" Uid="-660"/>
+                                <ListBoxItem Content="-670 mV" Uid="-670"/>
+                                <ListBoxItem Content="-680 mV" Uid="-680"/>
+                                <ListBoxItem Content="-690 mV" Uid="-690"/>
+                                <ListBoxItem Content="-700 mV" Uid="-700"/>
+                                <ListBoxItem Content="-710 mV" Uid="-710"/>
+                                <ListBoxItem Content="-720 mV" Uid="-720"/>
+                                <ListBoxItem Content="-730 mV" Uid="-730"/>
+                                <ListBoxItem Content="-740 mV" Uid="-740"/>
+                                <ListBoxItem Content="-750 mV" Uid="-750"/>
+                                <ListBoxItem Content="-760 mV" Uid="-760"/>
+                                <ListBoxItem Content="-770 mV" Uid="-770"/>
+                                <ListBoxItem Content="-780 mV" Uid="-780"/>
+                                <ListBoxItem Content="-790 mV" Uid="-790"/>
+                                <ListBoxItem Content="-800 mV" Uid="-800"/>
+                                <ListBoxItem Content="-810 mV" Uid="-810"/>
+                                <ListBoxItem Content="-820 mV" Uid="-820"/>
+                                <ListBoxItem Content="-830 mV" Uid="-830"/>
+                                <ListBoxItem Content="-840 mV" Uid="-840"/>
+                                <ListBoxItem Content="-850 mV" Uid="-850"/>
+                                <ListBoxItem Content="-860 mV" Uid="-860"/>
+                                <ListBoxItem Content="-870 mV" Uid="-870"/>
+                                <ListBoxItem Content="-880 mV" Uid="-880"/>
+                                <ListBoxItem Content="-890 mV" Uid="-890"/>
+                                <ListBoxItem Content="-900 mV" Uid="-900"/>
+                                <ListBoxItem Content="-910 mV" Uid="-910"/>
+                                <ListBoxItem Content="-920 mV" Uid="-920"/>
+                                <ListBoxItem Content="-930 mV" Uid="-930"/>
+                                <ListBoxItem Content="-940 mV" Uid="-940"/>
+                                <ListBoxItem Content="-950 mV" Uid="-950"/>
+                                <ListBoxItem Content="-960 mV" Uid="-960"/>
+                                <ListBoxItem Content="-970 mV" Uid="-970"/>
+                                <ListBoxItem Content="-980 mV" Uid="-980"/>
+                                <ListBoxItem Content="-990 mV" Uid="-990"/>
+                                <ListBoxItem Content="-1000 mV" Uid="-1000"/>
+                                <ListBoxItem Content="-1010 mV" Uid="-1010"/>
+                                <ListBoxItem Content="-1020 mV" Uid="-1020"/>
+                                <ListBoxItem Content="-1030 mV" Uid="-1030"/>
+                                <ListBoxItem Content="-1040 mV" Uid="-1040"/>
+                                <ListBoxItem Content="-1050 mV" Uid="-1050"/>
+                                <ListBoxItem Content="-1060 mV" Uid="-1060"/>
+                                <ListBoxItem Content="-1070 mV" Uid="-1070"/>
+                                <ListBoxItem Content="-1080 mV" Uid="-1080"/>
+                                <ListBoxItem Content="-1090 mV" Uid="-1090"/>
+                                <ListBoxItem Content="-1100 mV" Uid="-1100"/>
+                                <ListBoxItem Content="-1110 mV" Uid="-1110"/>
+                                <ListBoxItem Content="-1120 mV" Uid="-1120"/>
+                                <ListBoxItem Content="-1130 mV" Uid="-1130"/>
+                                <ListBoxItem Content="-1140 mV" Uid="-1140"/>
+                                <ListBoxItem Content="-1150 mV" Uid="-1150"/>
+                                <ListBoxItem Content="-1160 mV" Uid="-1160"/>
+                                <ListBoxItem Content="-1170 mV" Uid="-1170"/>
+                                <ListBoxItem Content="-1180 mV" Uid="-1180"/>
+                                <ListBoxItem Content="-1190 mV" Uid="-1190"/>
+                                <ListBoxItem Content="-1200 mV" Uid="-1200"/>
+                                <ListBoxItem Content="-1210 mV" Uid="-1210"/>
+                                <ListBoxItem Content="-1220 mV" Uid="-1220"/>
+                                <ListBoxItem Content="-1230 mV" Uid="-1230"/>
+                                <ListBoxItem Content="-1240 mV" Uid="-1240"/>
+                                <ListBoxItem Content="-1250 mV" Uid="-1250"/>
+                                <ListBoxItem Content="-1260 mV" Uid="-1260"/>
+                                <ListBoxItem Content="-1270 mV" Uid="-1270"/>
+                                <ListBoxItem Content="-1280 mV" Uid="-1280"/>
+                                <ListBoxItem Content="-1290 mV" Uid="-1290"/>
+                                <ListBoxItem Content="-1300 mV" Uid="-1300"/>
+                                <ListBoxItem Content="-1310 mV" Uid="-1310"/>
+                                <ListBoxItem Content="-1320 mV" Uid="-1320"/>
+                                <ListBoxItem Content="-1330 mV" Uid="-1330"/>
+                                <ListBoxItem Content="-1340 mV" Uid="-1340"/>
+                                <ListBoxItem Content="-1350 mV" Uid="-1350"/>
+                                <ListBoxItem Content="-1360 mV" Uid="-1360"/>
+                                <ListBoxItem Content="-1370 mV" Uid="-1370"/>
+                                <ListBoxItem Content="-1380 mV" Uid="-1380"/>
+                                <ListBoxItem Content="-1390 mV" Uid="-1390"/>
+                                <ListBoxItem Content="-1400 mV" Uid="-1400"/>
+                                <ListBoxItem Content="-1410 mV" Uid="-1410"/>
+                                <ListBoxItem Content="-1420 mV" Uid="-1420"/>
+                                <ListBoxItem Content="-1430 mV" Uid="-1430"/>
+                                <ListBoxItem Content="-1440 mV" Uid="-1440"/>
+                                <ListBoxItem Content="-1450 mV" Uid="-1450"/>
+                                <ListBoxItem Content="-1460 mV" Uid="-1460"/>
+                                <ListBoxItem Content="-1470 mV" Uid="-1470"/>
+                                <ListBoxItem Content="-1480 mV" Uid="-1480"/>
+                                <ListBoxItem Content="-1490 mV" Uid="-1490"/>
+                                <ListBoxItem Content="-1500 mV" Uid="-1500"/>
+                                <ListBoxItem Content="-1510 mV" Uid="-1510"/>
+                                <ListBoxItem Content="-1520 mV" Uid="-1520"/>
+                                <ListBoxItem Content="-1530 mV" Uid="-1530"/>
+                                <ListBoxItem Content="-1540 mV" Uid="-1540"/>
+                                <ListBoxItem Content="-1550 mV" Uid="-1550"/>
+                                <ListBoxItem Content="-1560 mV" Uid="-1560"/>
+                                <ListBoxItem Content="-1570 mV" Uid="-1570"/>
+                                <ListBoxItem Content="-1580 mV" Uid="-1580"/>
+                                <ListBoxItem Content="-1590 mV" Uid="-1590"/>
+                                <ListBoxItem Content="-1600 mV" Uid="-1600"/>
+                                <ListBoxItem Content="-1610 mV" Uid="-1610"/>
+                                <ListBoxItem Content="-1620 mV" Uid="-1620"/>
+                                <ListBoxItem Content="-1630 mV" Uid="-1630"/>
+                                <ListBoxItem Content="-1640 mV" Uid="-1640"/>
+                                <ListBoxItem Content="-1650 mV" Uid="-1650"/>
+                                <ListBoxItem Content="-1660 mV" Uid="-1660"/>
+                                <ListBoxItem Content="-1670 mV" Uid="-1670"/>
+                                <ListBoxItem Content="-1680 mV" Uid="-1680"/>
+                                <ListBoxItem Content="-1690 mV" Uid="-1690"/>
+                                <ListBoxItem Content="-1700 mV" Uid="-1700"/>
+                                <ListBoxItem Content="-1710 mV" Uid="-1710"/>
+                                <ListBoxItem Content="-1720 mV" Uid="-1720"/>
+                                <ListBoxItem Content="-1730 mV" Uid="-1730"/>
+                                <ListBoxItem Content="-1740 mV" Uid="-1740"/>
+                                <ListBoxItem Content="-1750 mV" Uid="-1750"/>
+                                <ListBoxItem Content="-1760 mV" Uid="-1760"/>
+                                <ListBoxItem Content="-1770 mV" Uid="-1770"/>
+                                <ListBoxItem Content="-1780 mV" Uid="-1780"/>
+                                <ListBoxItem Content="-1790 mV" Uid="-1790"/>
+                                <ListBoxItem Content="-1800 mV" Uid="-1800"/>
+                                <ListBoxItem Content="-1810 mV" Uid="-1810"/>
+                                <ListBoxItem Content="-1820 mV" Uid="-1820"/>
+                                <ListBoxItem Content="-1830 mV" Uid="-1830"/>
+                                <ListBoxItem Content="-1840 mV" Uid="-1840"/>
+                                <ListBoxItem Content="-1850 mV" Uid="-1850"/>
+                                <ListBoxItem Content="-1860 mV" Uid="-1860"/>
+                                <ListBoxItem Content="-1870 mV" Uid="-1870"/>
+                                <ListBoxItem Content="-1880 mV" Uid="-1880"/>
+                                <ListBoxItem Content="-1890 mV" Uid="-1890"/>
+                                <ListBoxItem Content="-1900 mV" Uid="-1900"/>
+                                <ListBoxItem Content="-1910 mV" Uid="-1910"/>
+                                <ListBoxItem Content="-1920 mV" Uid="-1920"/>
+                                <ListBoxItem Content="-1930 mV" Uid="-1930"/>
+                                <ListBoxItem Content="-1940 mV" Uid="-1940"/>
+                                <ListBoxItem Content="-1950 mV" Uid="-1950"/>
+                                <ListBoxItem Content="-1960 mV" Uid="-1960"/>
+                                <ListBoxItem Content="-1970 mV" Uid="-1970"/>
+                                <ListBoxItem Content="-1980 mV" Uid="-1980"/>
+                                <ListBoxItem Content="-1990 mV" Uid="-1990"/>
+                                <ListBoxItem Content="-2000 mV" Uid="-2000"/>
+                                <ListBoxItem Content="-2010 mV" Uid="-2010"/>
+                                <ListBoxItem Content="-2020 mV" Uid="-2020"/>
+                                <ListBoxItem Content="-2030 mV" Uid="-2030"/>
+                                <ListBoxItem Content="-2040 mV" Uid="-2040"/>
+                                <ListBoxItem Content="-2050 mV" Uid="-2050"/>
+                                <ListBoxItem Content="-2060 mV" Uid="-2060"/>
+                                <ListBoxItem Content="-2070 mV" Uid="-2070"/>
+                                <ListBoxItem Content="-2080 mV" Uid="-2080"/>
+                                <ListBoxItem Content="-2090 mV" Uid="-2090"/>
+                                <ListBoxItem Content="-2100 mV" Uid="-2100"/>
+                                <ListBoxItem Content="-2110 mV" Uid="-2110"/>
+                                <ListBoxItem Content="-2120 mV" Uid="-2120"/>
+                                <ListBoxItem Content="-2130 mV" Uid="-2130"/>
+                                <ListBoxItem Content="-2140 mV" Uid="-2140"/>
+                                <ListBoxItem Content="-2150 mV" Uid="-2150"/>
+                                <ListBoxItem Content="-2160 mV" Uid="-2160"/>
+                                <ListBoxItem Content="-2170 mV" Uid="-2170"/>
+                                <ListBoxItem Content="-2180 mV" Uid="-2180"/>
+                                <ListBoxItem Content="-2190 mV" Uid="-2190"/>
+                                <ListBoxItem Content="-2200 mV" Uid="-2200"/>
+                                <ListBoxItem Content="-2210 mV" Uid="-2210"/>
+                                <ListBoxItem Content="-2220 mV" Uid="-2220"/>
+                                <ListBoxItem Content="-2230 mV" Uid="-2230"/>
+                                <ListBoxItem Content="-2240 mV" Uid="-2240"/>
+                                <ListBoxItem Content="-2250 mV" Uid="-2250"/>
+                                <ListBoxItem Content="-2260 mV" Uid="-2260"/>
+                                <ListBoxItem Content="-2270 mV" Uid="-2270"/>
+                                <ListBoxItem Content="-2280 mV" Uid="-2280"/>
+                                <ListBoxItem Content="-2290 mV" Uid="-2290"/>
+                                <ListBoxItem Content="-2300 mV" Uid="-2300"/>
+                                <ListBoxItem Content="-2310 mV" Uid="-2310"/>
+                                <ListBoxItem Content="-2320 mV" Uid="-2320"/>
+                                <ListBoxItem Content="-2330 mV" Uid="-2330"/>
+                                <ListBoxItem Content="-2340 mV" Uid="-2340"/>
+                                <ListBoxItem Content="-2350 mV" Uid="-2350"/>
+                                <ListBoxItem Content="-2360 mV" Uid="-2360"/>
+                                <ListBoxItem Content="-2370 mV" Uid="-2370"/>
+                                <ListBoxItem Content="-2380 mV" Uid="-2380"/>
+                                <ListBoxItem Content="-2390 mV" Uid="-2390"/>
+                                <ListBoxItem Content="-2400 mV" Uid="-2400"/>
+                                <ListBoxItem Content="-2410 mV" Uid="-2410"/>
+                                <ListBoxItem Content="-2420 mV" Uid="-2420"/>
+                                <ListBoxItem Content="-2430 mV" Uid="-2430"/>
+                                <ListBoxItem Content="-2440 mV" Uid="-2440"/>
+                                <ListBoxItem Content="-2450 mV" Uid="-2450"/>
+                                <ListBoxItem Content="-2460 mV" Uid="-2460"/>
+                                <ListBoxItem Content="-2470 mV" Uid="-2470"/>
+                                <ListBoxItem Content="-2480 mV" Uid="-2480"/>
+                                <ListBoxItem Content="-2490 mV" Uid="-2490"/>
+                                <ListBoxItem Content="-2500 mV" Uid="-2500"/>
+                                <ListBoxItem Content="-2510 mV" Uid="-2510"/>
+                                <ListBoxItem Content="-2520 mV" Uid="-2520"/>
+                                <ListBoxItem Content="-2530 mV" Uid="-2530"/>
+                                <ListBoxItem Content="-2540 mV" Uid="-2540"/>
+                                <ListBoxItem Content="-2550 mV" Uid="-2550"/>
+                                <ListBoxItem Content="-2560 mV" Uid="-2560"/>
+                                <ListBoxItem Content="-2570 mV" Uid="-2570"/>
+                                <ListBoxItem Content="-2580 mV" Uid="-2580"/>
+                                <ListBoxItem Content="-2590 mV" Uid="-2590"/>
+                                <ListBoxItem Content="-2600 mV" Uid="-2600"/>
+                                <ListBoxItem Content="-2610 mV" Uid="-2610"/>
+                                <ListBoxItem Content="-2620 mV" Uid="-2620"/>
+                                <ListBoxItem Content="-2630 mV" Uid="-2630"/>
+                                <ListBoxItem Content="-2640 mV" Uid="-2640"/>
+                                <ListBoxItem Content="-2650 mV" Uid="-2650"/>
+                                <ListBoxItem Content="-2660 mV" Uid="-2660"/>
+                                <ListBoxItem Content="-2670 mV" Uid="-2670"/>
+                                <ListBoxItem Content="-2680 mV" Uid="-2680"/>
+                                <ListBoxItem Content="-2690 mV" Uid="-2690"/>
+                                <ListBoxItem Content="-2700 mV" Uid="-2700"/>
+                                <ListBoxItem Content="-2710 mV" Uid="-2710"/>
+                                <ListBoxItem Content="-2720 mV" Uid="-2720"/>
+                                <ListBoxItem Content="-2730 mV" Uid="-2730"/>
+                                <ListBoxItem Content="-2740 mV" Uid="-2740"/>
+                                <ListBoxItem Content="-2750 mV" Uid="-2750"/>
+                                <ListBoxItem Content="-2760 mV" Uid="-2760"/>
+                                <ListBoxItem Content="-2770 mV" Uid="-2770"/>
+                                <ListBoxItem Content="-2780 mV" Uid="-2780"/>
+                                <ListBoxItem Content="-2790 mV" Uid="-2790"/>
+                                <ListBoxItem Content="-2800 mV" Uid="-2800"/>
+                                <ListBoxItem Content="-2810 mV" Uid="-2810"/>
+                                <ListBoxItem Content="-2820 mV" Uid="-2820"/>
+                                <ListBoxItem Content="-2830 mV" Uid="-2830"/>
+                                <ListBoxItem Content="-2840 mV" Uid="-2840"/>
+                                <ListBoxItem Content="-2850 mV" Uid="-2850"/>
+                                <ListBoxItem Content="-2860 mV" Uid="-2860"/>
+                                <ListBoxItem Content="-2870 mV" Uid="-2870"/>
+                                <ListBoxItem Content="-2880 mV" Uid="-2880"/>
+                                <ListBoxItem Content="-2890 mV" Uid="-2890"/>
+                                <ListBoxItem Content="-2900 mV" Uid="-2900"/>
+                                <ListBoxItem Content="-2910 mV" Uid="-2910"/>
+                                <ListBoxItem Content="-2920 mV" Uid="-2920"/>
+                                <ListBoxItem Content="-2930 mV" Uid="-2930"/>
+                                <ListBoxItem Content="-2940 mV" Uid="-2940"/>
+                                <ListBoxItem Content="-2950 mV" Uid="-2950"/>
+                                <ListBoxItem Content="-2960 mV" Uid="-2960"/>
+                                <ListBoxItem Content="-2970 mV" Uid="-2970"/>
+                                <ListBoxItem Content="-2980 mV" Uid="-2980"/>
+                                <ListBoxItem Content="-2990 mV" Uid="-2990"/>
+                                <ListBoxItem Content="-3000 mV" Uid="-3000"/>
+                                <ListBoxItem Content="-3010 mV" Uid="-3010"/>
+                                <ListBoxItem Content="-3020 mV" Uid="-3020"/>
+                                <ListBoxItem Content="-3030 mV" Uid="-3030"/>
+                                <ListBoxItem Content="-3040 mV" Uid="-3040"/>
+                                <ListBoxItem Content="-3050 mV" Uid="-3050"/>
+                                <ListBoxItem Content="-3060 mV" Uid="-3060"/>
+                                <ListBoxItem Content="-3070 mV" Uid="-3070"/>
+                                <ListBoxItem Content="-3080 mV" Uid="-3080"/>
+                                <ListBoxItem Content="-3090 mV" Uid="-3090"/>
+                                <ListBoxItem Content="-3100 mV" Uid="-3100"/>
+                                <ListBoxItem Content="-3110 mV" Uid="-3110"/>
+                                <ListBoxItem Content="-3120 mV" Uid="-3120"/>
+                                <ListBoxItem Content="-3130 mV" Uid="-3130"/>
+                                <ListBoxItem Content="-3140 mV" Uid="-3140"/>
+                                <ListBoxItem Content="-3150 mV" Uid="-3150"/>
+                                <ListBoxItem Content="-3160 mV" Uid="-3160"/>
+                                <ListBoxItem Content="-3170 mV" Uid="-3170"/>
+                                <ListBoxItem Content="-3180 mV" Uid="-3180"/>
+                                <ListBoxItem Content="-3190 mV" Uid="-3190"/>
+                                <ListBoxItem Content="-3200 mV" Uid="-3200"/>
+                                <ListBoxItem Content="-3210 mV" Uid="-3210"/>
+                                <ListBoxItem Content="-3220 mV" Uid="-3220"/>
+                                <ListBoxItem Content="-3230 mV" Uid="-3230"/>
+                                <ListBoxItem Content="-3240 mV" Uid="-3240"/>
+                                <ListBoxItem Content="-3250 mV" Uid="-3250"/>
+                                <ListBoxItem Content="-3260 mV" Uid="-3260"/>
+                                <ListBoxItem Content="-3270 mV" Uid="-3270"/>
+                                <ListBoxItem Content="-3280 mV" Uid="-3280"/>
+                                <ListBoxItem Content="-3290 mV" Uid="-3290"/>
+                                <ListBoxItem Content="-3300 mV" Uid="-3300"/>
+                                <ListBoxItem Content="-3310 mV" Uid="-3310"/>
+                                <ListBoxItem Content="-3320 mV" Uid="-3320"/>
+                                <ListBoxItem Content="-3330 mV" Uid="-3330"/>
+                                <ListBoxItem Content="-3340 mV" Uid="-3340"/>
+                                <ListBoxItem Content="-3350 mV" Uid="-3350"/>
+                                <ListBoxItem Content="-3360 mV" Uid="-3360"/>
+                                <ListBoxItem Content="-3370 mV" Uid="-3370"/>
+                                <ListBoxItem Content="-3380 mV" Uid="-3380"/>
+                                <ListBoxItem Content="-3390 mV" Uid="-3390"/>
+                                <ListBoxItem Content="-3400 mV" Uid="-3400"/>
+                                <ListBoxItem Content="-3410 mV" Uid="-3410"/>
+                                <ListBoxItem Content="-3420 mV" Uid="-3420"/>
+                                <ListBoxItem Content="-3430 mV" Uid="-3430"/>
+                                <ListBoxItem Content="-3440 mV" Uid="-3440"/>
+                                <ListBoxItem Content="-3450 mV" Uid="-3450"/>
+                                <ListBoxItem Content="-3460 mV" Uid="-3460"/>
+                                <ListBoxItem Content="-3470 mV" Uid="-3470"/>
+                                <ListBoxItem Content="-3480 mV" Uid="-3480"/>
+                                <ListBoxItem Content="-3490 mV" Uid="-3490"/>
+                                <ListBoxItem Content="-3500 mV" Uid="-3500"/>
+                                <ListBoxItem Content="-3510 mV" Uid="-3510"/>
+                                <ListBoxItem Content="-3520 mV" Uid="-3520"/>
+                                <ListBoxItem Content="-3530 mV" Uid="-3530"/>
+                                <ListBoxItem Content="-3540 mV" Uid="-3540"/>
+                                <ListBoxItem Content="-3550 mV" Uid="-3550"/>
+                                <ListBoxItem Content="-3560 mV" Uid="-3560"/>
+                                <ListBoxItem Content="-3570 mV" Uid="-3570"/>
+                                <ListBoxItem Content="-3580 mV" Uid="-3580"/>
+                                <ListBoxItem Content="-3590 mV" Uid="-3590"/>
+                                <ListBoxItem Content="-3600 mV" Uid="-3600"/>
+                                <ListBoxItem Content="-3610 mV" Uid="-3610"/>
+                                <ListBoxItem Content="-3620 mV" Uid="-3620"/>
+                                <ListBoxItem Content="-3630 mV" Uid="-3630"/>
+                                <ListBoxItem Content="-3640 mV" Uid="-3640"/>
+                                <ListBoxItem Content="-3650 mV" Uid="-3650"/>
+                                <ListBoxItem Content="-3660 mV" Uid="-3660"/>
+                                <ListBoxItem Content="-3670 mV" Uid="-3670"/>
+                                <ListBoxItem Content="-3680 mV" Uid="-3680"/>
+                                <ListBoxItem Content="-3690 mV" Uid="-3690"/>
+                                <ListBoxItem Content="-3700 mV" Uid="-3700"/>
+                                <ListBoxItem Content="-3710 mV" Uid="-3710"/>
+                                <ListBoxItem Content="-3720 mV" Uid="-3720"/>
+                                <ListBoxItem Content="-3730 mV" Uid="-3730"/>
+                                <ListBoxItem Content="-3740 mV" Uid="-3740"/>
+                                <ListBoxItem Content="-3750 mV" Uid="-3750"/>
+                                <ListBoxItem Content="-3760 mV" Uid="-3760"/>
+                                <ListBoxItem Content="-3770 mV" Uid="-3770"/>
+                                <ListBoxItem Content="-3780 mV" Uid="-3780"/>
+                                <ListBoxItem Content="-3790 mV" Uid="-3790"/>
+                                <ListBoxItem Content="-3800 mV" Uid="-3800"/>
+                                <ListBoxItem Content="-3810 mV" Uid="-3810"/>
+                                <ListBoxItem Content="-3820 mV" Uid="-3820"/>
+                                <ListBoxItem Content="-3830 mV" Uid="-3830"/>
+                                <ListBoxItem Content="-3840 mV" Uid="-3840"/>
+                                <ListBoxItem Content="-3850 mV" Uid="-3850"/>
+                                <ListBoxItem Content="-3860 mV" Uid="-3860"/>
+                                <ListBoxItem Content="-3870 mV" Uid="-3870"/>
+                                <ListBoxItem Content="-3880 mV" Uid="-3880"/>
+                                <ListBoxItem Content="-3890 mV" Uid="-3890"/>
+                                <ListBoxItem Content="-3900 mV" Uid="-3900"/>
+                                <ListBoxItem Content="-3910 mV" Uid="-3910"/>
+                                <ListBoxItem Content="-3920 mV" Uid="-3920"/>
+                                <ListBoxItem Content="-3930 mV" Uid="-3930"/>
+                                <ListBoxItem Content="-3940 mV" Uid="-3940"/>
+                                <ListBoxItem Content="-3950 mV" Uid="-3950"/>
+                                <ListBoxItem Content="-3960 mV" Uid="-3960"/>
+                                <ListBoxItem Content="-3970 mV" Uid="-3970"/>
+                                <ListBoxItem Content="-3980 mV" Uid="-3980"/>
+                                <ListBoxItem Content="-3990 mV" Uid="-3990"/>
+                                <ListBoxItem Content="-4000 mV" Uid="-4000"/>
+                                <ListBoxItem Content="-4010 mV" Uid="-4010"/>
+                                <ListBoxItem Content="-4020 mV" Uid="-4020"/>
+                                <ListBoxItem Content="-4030 mV" Uid="-4030"/>
+                                <ListBoxItem Content="-4040 mV" Uid="-4040"/>
+                                <ListBoxItem Content="-4050 mV" Uid="-4050"/>
+                                <ListBoxItem Content="-4060 mV" Uid="-4060"/>
+                                <ListBoxItem Content="-4070 mV" Uid="-4070"/>
+                                <ListBoxItem Content="-4080 mV" Uid="-4080"/>
+                                <ListBoxItem Content="-4090 mV" Uid="-4090"/>
+                                <ListBoxItem Content="-4100 mV" Uid="-4100"/>
+                                <ListBoxItem Content="-4110 mV" Uid="-4110"/>
+                                <ListBoxItem Content="-4120 mV" Uid="-4120"/>
+                                <ListBoxItem Content="-4130 mV" Uid="-4130"/>
+                                <ListBoxItem Content="-4140 mV" Uid="-4140"/>
+                                <ListBoxItem Content="-4150 mV" Uid="-4150"/>
+                                <ListBoxItem Content="-4160 mV" Uid="-4160"/>
+                                <ListBoxItem Content="-4170 mV" Uid="-4170"/>
+                                <ListBoxItem Content="-4180 mV" Uid="-4180"/>
+                                <ListBoxItem Content="-4190 mV" Uid="-4190"/>
+                                <ListBoxItem Content="-4200 mV" Uid="-4200"/>
+                                <ListBoxItem Content="-4210 mV" Uid="-4210"/>
+                                <ListBoxItem Content="-4220 mV" Uid="-4220"/>
+                                <ListBoxItem Content="-4230 mV" Uid="-4230"/>
+                                <ListBoxItem Content="-4240 mV" Uid="-4240"/>
+                                <ListBoxItem Content="-4250 mV" Uid="-4250"/>
+                                <ListBoxItem Content="-4260 mV" Uid="-4260"/>
+                                <ListBoxItem Content="-4270 mV" Uid="-4270"/>
+                                <ListBoxItem Content="-4280 mV" Uid="-4280"/>
+                                <ListBoxItem Content="-4290 mV" Uid="-4290"/>
+                                <ListBoxItem Content="-4300 mV" Uid="-4300"/>
+                                <ListBoxItem Content="-4310 mV" Uid="-4310"/>
+                                <ListBoxItem Content="-4320 mV" Uid="-4320"/>
+                                <ListBoxItem Content="-4330 mV" Uid="-4330"/>
+                                <ListBoxItem Content="-4340 mV" Uid="-4340"/>
+                                <ListBoxItem Content="-4350 mV" Uid="-4350"/>
+                                <ListBoxItem Content="-4360 mV" Uid="-4360"/>
+                                <ListBoxItem Content="-4370 mV" Uid="-4370"/>
+                                <ListBoxItem Content="-4380 mV" Uid="-4380"/>
+                                <ListBoxItem Content="-4390 mV" Uid="-4390"/>
+                                <ListBoxItem Content="-4400 mV" Uid="-4400"/>
+                                <ListBoxItem Content="-4410 mV" Uid="-4410"/>
+                                <ListBoxItem Content="-4420 mV" Uid="-4420"/>
+                                <ListBoxItem Content="-4430 mV" Uid="-4430"/>
+                                <ListBoxItem Content="-4440 mV" Uid="-4440"/>
+                                <ListBoxItem Content="-4450 mV" Uid="-4450"/>
+                                <ListBoxItem Content="-4460 mV" Uid="-4460"/>
+                                <ListBoxItem Content="-4470 mV" Uid="-4470"/>
+                                <ListBoxItem Content="-4480 mV" Uid="-4480"/>
+                                <ListBoxItem Content="-4490 mV" Uid="-4490"/>
+                                <ListBoxItem Content="-4500 mV" Uid="-4500"/>
+                                <ListBoxItem Content="-4510 mV" Uid="-4510"/>
+                                <ListBoxItem Content="-4520 mV" Uid="-4520"/>
+                                <ListBoxItem Content="-4530 mV" Uid="-4530"/>
+                                <ListBoxItem Content="-4540 mV" Uid="-4540"/>
+                                <ListBoxItem Content="-4550 mV" Uid="-4550"/>
+                                <ListBoxItem Content="-4560 mV" Uid="-4560"/>
+                                <ListBoxItem Content="-4570 mV" Uid="-4570"/>
+                                <ListBoxItem Content="-4580 mV" Uid="-4580"/>
+                                <ListBoxItem Content="-4590 mV" Uid="-4590"/>
+                                <ListBoxItem Content="-4600 mV" Uid="-4600"/>
+                                <ListBoxItem Content="-4610 mV" Uid="-4610"/>
+                                <ListBoxItem Content="-4620 mV" Uid="-4620"/>
+                                <ListBoxItem Content="-4630 mV" Uid="-4630"/>
+                                <ListBoxItem Content="-4640 mV" Uid="-4640"/>
+                                <ListBoxItem Content="-4650 mV" Uid="-4650"/>
+                                <ListBoxItem Content="-4660 mV" Uid="-4660"/>
+                                <ListBoxItem Content="-4670 mV" Uid="-4670"/>
+                                <ListBoxItem Content="-4680 mV" Uid="-4680"/>
+                                <ListBoxItem Content="-4690 mV" Uid="-4690"/>
+                                <ListBoxItem Content="-4700 mV" Uid="-4700"/>
+                                <ListBoxItem Content="-4710 mV" Uid="-4710"/>
+                                <ListBoxItem Content="-4720 mV" Uid="-4720"/>
+                                <ListBoxItem Content="-4730 mV" Uid="-4730"/>
+                                <ListBoxItem Content="-4740 mV" Uid="-4740"/>
+                                <ListBoxItem Content="-4750 mV" Uid="-4750"/>
+                                <ListBoxItem Content="-4760 mV" Uid="-4760"/>
+                                <ListBoxItem Content="-4770 mV" Uid="-4770"/>
+                                <ListBoxItem Content="-4780 mV" Uid="-4780"/>
+                                <ListBoxItem Content="-4790 mV" Uid="-4790"/>
+                                <ListBoxItem Content="-4800 mV" Uid="-4800"/>
+                                <ListBoxItem Content="-4810 mV" Uid="-4810"/>
+                                <ListBoxItem Content="-4820 mV" Uid="-4820"/>
+                                <ListBoxItem Content="-4830 mV" Uid="-4830"/>
+                                <ListBoxItem Content="-4840 mV" Uid="-4840"/>
+                                <ListBoxItem Content="-4850 mV" Uid="-4850"/>
+                                <ListBoxItem Content="-4860 mV" Uid="-4860"/>
+                                <ListBoxItem Content="-4870 mV" Uid="-4870"/>
+                                <ListBoxItem Content="-4880 mV" Uid="-4880"/>
+                                <ListBoxItem Content="-4890 mV" Uid="-4890"/>
+                                <ListBoxItem Content="-4900 mV" Uid="-4900"/>
+                                <ListBoxItem Content="-4910 mV" Uid="-4910"/>
+                                <ListBoxItem Content="-4920 mV" Uid="-4920"/>
+                                <ListBoxItem Content="-4930 mV" Uid="-4930"/>
+                                <ListBoxItem Content="-4940 mV" Uid="-4940"/>
+                                <ListBoxItem Content="-4950 mV" Uid="-4950"/>
+                                <ListBoxItem Content="-4960 mV" Uid="-4960"/>
+                                <ListBoxItem Content="-4970 mV" Uid="-4970"/>
+                                <ListBoxItem Content="-4980 mV" Uid="-4980"/>
+                                <ListBoxItem Content="-4990 mV" Uid="-4990"/>
+                                <ListBoxItem Content="-5000 mV" Uid="-5000"/>
+                                <ListBoxItem Content="-5010 mV" Uid="-5010"/>
+                                <ListBoxItem Content="-5020 mV" Uid="-5020"/>
+                                <ListBoxItem Content="-5030 mV" Uid="-5030"/>
+                                <ListBoxItem Content="-5040 mV" Uid="-5040"/>
+                                <ListBoxItem Content="-5050 mV" Uid="-5050"/>
+                                <ListBoxItem Content="-5060 mV" Uid="-5060"/>
+                                <ListBoxItem Content="-5070 mV" Uid="-5070"/>
+                                <ListBoxItem Content="-5080 mV" Uid="-5080"/>
+                                <ListBoxItem Content="-5090 mV" Uid="-5090"/>
+                                <ListBoxItem Content="-5100 mV" Uid="-5100"/>
+                                <ListBoxItem Content="-5110 mV" Uid="-5110"/>
+
+                            </ComboBox>
+                            <Button Content="Read" Name="btnReadVCOM" Margin="10,38,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="74" Height="23" Click="btnReadVCOM_Click"/>
+                            <Button Content="Write" Name="btnWriteVCOM" Margin="89,38,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75" Height="23" Click="btnWriteVCOM_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Temperature" HorizontalAlignment="Left" Height="192" Margin="10,338,0,0" VerticalAlignment="Top" Width="223">
+                        <Grid>
+                            <Label Content="Reading : -°C" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Name="lblTemperature"/>
+                            <Button x:Name="btnReadTemperature" Content="Read" HorizontalAlignment="Left" Margin="101,10,0,0" VerticalAlignment="Top" Width="100" Click="btnReadTemperature_Click" />
+                            <GroupBox Header="Cold Limit" HorizontalAlignment="Left" Height="65" Margin="10,30,0,0" VerticalAlignment="Top" Width="191">
+                                <Grid>
+                                    <Button Content="Read" Name="btnReadTooCold" Margin="84,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnReadTooCold_Click"/>
+                                    <Button Content="Write" Name="btnWriteTooCold" Margin="129,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnWriteTooCold_Click"/>
+                                    <ComboBox HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Width="69" Name="cmbxTooCold">
+                                        <ListBoxItem Content="-7°C" Uid="-7"/>
+                                        <ListBoxItem Content="-6°C" Uid="-6"/>
+                                        <ListBoxItem Content="-5°C" Uid="-5"/>
+                                        <ListBoxItem Content="-4°C" Uid="-4"/>
+                                        <ListBoxItem Content="-3°C" Uid="-3"/>
+                                        <ListBoxItem Content="-2°C" Uid="-2"/>
+                                        <ListBoxItem Content="-1°C" Uid="-1"/>
+                                        <ListBoxItem Content="0°C" Uid="0"/>
+                                        <ListBoxItem Content="1°C" Uid="1"/>
+                                        <ListBoxItem Content="2°C" Uid="2"/>
+                                        <ListBoxItem Content="3°C" Uid="3"/>
+                                        <ListBoxItem Content="4°C" Uid="4"/>
+                                        <ListBoxItem Content="5°C" Uid="5"/>
+                                        <ListBoxItem Content="6°C" Uid="6"/>
+                                        <ListBoxItem Content="7°C" Uid="7"/>
+                                        <ListBoxItem Content="8°C" Uid="8"/>
+
+                                    </ComboBox>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Hot Limit" HorizontalAlignment="Left" Height="65" Margin="10,100,0,0" VerticalAlignment="Top" Width="191">
+                                <Grid>
+                                    <Button Content="Read" Name="btnReadTooHot" Margin="84,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnReadTooHot_Click"/>
+                                    <Button Content="Write" Name="btnWriteTooHot" Margin="129,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnWriteTooHot_Click"/>
+                                    <ComboBox HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Width="69" Name="cmbxTooHot">
+                                        <ListBoxItem Content="42°C" Uid="42"/>
+                                        <ListBoxItem Content="43°C" Uid="43"/>
+                                        <ListBoxItem Content="44°C" Uid="44"/>
+                                        <ListBoxItem Content="45°C" Uid="45"/>
+                                        <ListBoxItem Content="46°C" Uid="46"/>
+                                        <ListBoxItem Content="47°C" Uid="47"/>
+                                        <ListBoxItem Content="48°C" Uid="48"/>
+                                        <ListBoxItem Content="49°C" Uid="49"/>
+                                        <ListBoxItem Content="50°C" Uid="50"/>
+                                        <ListBoxItem Content="51°C" Uid="51"/>
+                                        <ListBoxItem Content="52°C" Uid="52"/>
+                                        <ListBoxItem Content="53°C" Uid="53"/>
+                                        <ListBoxItem Content="54°C" Uid="54"/>
+                                        <ListBoxItem Content="55°C" Uid="55"/>
+                                        <ListBoxItem Content="56°C" Uid="56"/>
+                                        <ListBoxItem Content="57°C" Uid="57"/>
+                                        <ListBoxItem Content="58°C" Uid="58"/>
+                                        <ListBoxItem Content="59°C" Uid="59"/>
+                                    </ComboBox>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Power Up" HorizontalAlignment="Left" Height="224" Margin="471,10,0,0" VerticalAlignment="Top" Width="463">
+                        <Grid>
+                            <GroupBox Header="Sequence" HorizontalAlignment="Left" Height="188"  VerticalAlignment="Top" Width="199" Margin="10,10,0,0">
+                                <Grid>
+                                    <Label Content="VPOS (+15V)" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <Label Content="VNEG (-15V)" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <Label Content="VDDH (+22V)" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <Label Content="VEE (-20V)" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top" Width="80" Name="cmbxPowerUpSeqVPOS">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,42,0,0" VerticalAlignment="Top" Width="80" Name="cmbxPowerUpSeqVNEG">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,73,0,0" VerticalAlignment="Top" Width="80" Name="cmbxPowerUpSeqVDDH">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,104,0,0" VerticalAlignment="Top" Width="80" Name="cmbxPowerUpSeqVEE">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+
+                                    <Button Content="Read" Name="btnReadPowerUpSeq" Margin="10,137,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="23" Click="btnReadPowerUpSeq_Click"/>
+                                    <Button Content="Write" Name="btnWritePowerUpSeq" Margin="100,137,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" Height="23" Click="btnWritePowerUpSeq_Click"/>
+
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Timing" HorizontalAlignment="Left" Height="188"  VerticalAlignment="Top" Width="231" Margin="214,10,0,0">
+                                <Grid>
+                                    <Label Content="Start -> Strobe 1" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 1 -> Strobe 2" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 2 -> Strobe 3" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 3 -> Strobe 4" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,10,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerUpTimingStToS1">
+                                        <ListBoxItem Content="3 ms" Uid="3"/>
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="9 ms" Uid="9"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,42,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerUpTimingS1ToS2">
+                                        <ListBoxItem Content="3 ms" Uid="3"/>
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="9 ms" Uid="9"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,73,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerUpTimingS2ToS3">
+                                        <ListBoxItem Content="3 ms" Uid="3"/>
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="9 ms" Uid="9"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,104,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerUpTimingS3ToS4">
+                                        <ListBoxItem Content="3 ms" Uid="3"/>
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="9 ms" Uid="9"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                    </ComboBox>
+
+                                    <Button Content="Read" Name="btnReadPowerUpTiming" Margin="10,137,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" Height="23" Click="btnReadPowerUpTiming_Click"/>
+                                    <Button Content="Write" Name="btnWritePowerUpTiming" Margin="114,137,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" Height="23" Click="btnWritePowerUpTiming_Click"/>
+
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="ID" HorizontalAlignment="Left" Height="62" Margin="10,10,0,0" VerticalAlignment="Top" Width="265">
+                        <Grid>
+                            <TextBox x:Name="txtbScreenId" HorizontalAlignment="Left" Height="23" 
+                                     TextWrapping="Wrap" Text="----" VerticalAlignment="Top" Width="100" TextAlignment="Right" Margin="10,10,0,0"/>
+                            <Button Content="Read" x:Name="btnReadId" Margin="115,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnReadId_Click"/>
+                            <Button Content="Write" x:Name="btnWriteId" Margin="160,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnWriteId_Click"/>
+                            <Button Content="Reset" x:Name="btnResetId" Margin="205,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="40" Height="23" Click="btnResetId_Click"/>
+
+
+                        </Grid>
+
+                    </GroupBox>
+                    <GroupBox Header="System" HorizontalAlignment="Left" Height="62" Margin="10,72,0,0" VerticalAlignment="Top" Width="223">
+                        <Grid>
+                            <Button Content="Reboot" x:Name="btnReboot" Margin="10,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="93" Height="23" Click="btnReboot_Click"/>
+                            <Button Content="Shutdown" x:Name="btnShutdown" Margin="108,10,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="93" Height="23" Click="btnShutdown_Click"/>
+
+                        </Grid>
+
+                    </GroupBox>
+                    <GroupBox Header="Power Down" HorizontalAlignment="Left" Height="261" Margin="471,258,0,0" VerticalAlignment="Top" Width="463">
+                        <Grid>
+                            <GroupBox Header="Sequence" HorizontalAlignment="Left" Height="179"  VerticalAlignment="Top" Width="199" Margin="10,10,0,0">
+                                <Grid>
+                                    <Label Content="VPOS (+15V)" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <Label Content="VNEG (-15V)" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <Label Content="VDDH (+22V)" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <Label Content="VEE (-20V)" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Right" />
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top" Width="80" x:Name="cmbxPowerDownSeqVPOS">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,42,0,0" VerticalAlignment="Top" Width="80" x:Name="cmbxPowerDownSeqVNEG">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,73,0,0" VerticalAlignment="Top" Width="80" x:Name="cmbxPowerDownSeqVDDH">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="100,104,0,0" VerticalAlignment="Top" Width="80" x:Name="cmbxPowerDownSeqVEE">
+                                        <ListBoxItem Content="Strobe 1" Uid="0"/>
+                                        <ListBoxItem Content="Strobe 2" Uid="1"/>
+                                        <ListBoxItem Content="Strobe 3" Uid="2"/>
+                                        <ListBoxItem Content="Strobe 4" Uid="3"/>
+                                    </ComboBox>
+
+                                    <Button Content="Read" x:Name="btnReadPowerDownSeq" Margin="10,131,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="85" Height="23" Click="btnReadPowerDownSeq_Click"/>
+                                    <Button Content="Write" x:Name="btnWritePowerDownSeq" Margin="100,131,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" Height="23" Click="btnWritePowerDownSeq_Click"/>
+
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Timing" HorizontalAlignment="Left" Height="219"  VerticalAlignment="Top" Width="231" Margin="214,10,0,0">
+                                <Grid>
+                                    <Label Content="Start -> Strobe 1" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 1 -> Strobe 2" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 2 -> Strobe 3" HorizontalAlignment="Left" Margin="10,69,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 3 -> Strobe 4" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <Label Content="Strobe 1-4 Multiplier" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Right" />
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,10,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerDownTimingStToS1">
+                                        <ListBoxItem Content="3 ms" Uid="3"/>
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,42,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerDownTimingS1ToS2">
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                        <ListBoxItem Content="24 ms" Uid="24"/>
+                                        <ListBoxItem Content="48 ms" Uid="48"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,73,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerDownTimingS2ToS3">
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                        <ListBoxItem Content="24 ms" Uid="24"/>
+                                        <ListBoxItem Content="48 ms" Uid="48"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,104,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerDownTimingS3ToS4">
+                                        <ListBoxItem Content="6 ms" Uid="6"/>
+                                        <ListBoxItem Content="12 ms" Uid="12"/>
+                                        <ListBoxItem Content="24 ms" Uid="24"/>
+                                        <ListBoxItem Content="48 ms" Uid="48"/>
+                                    </ComboBox>
+                                    <ComboBox HorizontalAlignment="Left" Margin="135,135,0,0" VerticalAlignment="Top" Width="74" Name="cmbxPowerDownTimingMultiplier">
+                                        <ListBoxItem Content="1x" Uid="1"/>
+                                        <ListBoxItem Content="16x" Uid="16"/>
+                                    </ComboBox>
+                                    <Button Content="Read" Name="btnReadPowerDownTiming" Margin="10,164,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" Height="23" Click="btnReadPowerDownTiming_Click"/>
+                                    <Button Content="Write" Name="btnWritePowerDownTiming" Margin="114,164,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" Height="23" Click="btnWritePowerDownTiming_Click"/>
+
+
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="VADJ" HorizontalAlignment="Left" Height="90" Margin="280,105,0,0" VerticalAlignment="Top" Width="186">
+                        <Grid>
+                            <ComboBox HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Width="154" x:Name="cmbxVADJ">
+                                <ListBoxItem Content="±15.000 V" Uid="15000"/>
+                                <ListBoxItem Content="±14.750 V" Uid="14750"/>
+                                <ListBoxItem Content="±14.500 V" Uid="14500"/>
+                                <ListBoxItem Content="±14.250 V" Uid="14250"/>
+                            </ComboBox>
+                            <Button Content="Read" x:Name="btnReadVADJ" Margin="10,38,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="74" Height="23" Click="btnReadVADJ_Click"/>
+                            <Button Content="Write" x:Name="btnWriteVADJ" Margin="89,38,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75" Height="23" Click="btnWriteVADJ_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <Button Content="Throughput" x:Name="btntestThroughput" Margin="315,280,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="74" Height="23" Click="btntestThroughput_Click"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Registers">
+                <Grid Background="#FFFFFFFF" Name="registerGrid">
+                    <Button Content="Write All" Name="btnWriteAll" Margin="900,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="25" Click="btnWriteAll_Click"/>
+                    <Button Content="Read All" Name="btnReadAll" Margin="845,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="50" Height="25" Click="btnReadAll_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Picture Testing">
+                <Grid Background="#FFFFFFFF">
+                    <GroupBox Header="Testing Screens" HorizontalAlignment="Left" Height="288" Margin="10,10,0,0" VerticalAlignment="Top" Width="213">
+                        <Grid Background="#FFFFFFFF">
+                            <Button x:Name="btnTestWhite" Content="White" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="181" Click="btnTestWhite_Click"/>
+                            <Button x:Name="btnTestBlack" Content="Black" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top" Width="181" Click="btnTestBlack_Click"/>
+                            <Button x:Name="btnTestWBW" Content="W-B-W" HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Width="181" Click="btnTestWBW_Click"/>
+                            <TextBox x:Name="inpTestLines" HorizontalAlignment="Left" Height="20" Margin="161,110,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" Width="30" TextAlignment="Right"/>
+                            <Button x:Name="btnTestLines" Content="Lines" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top" Width="146" Click="btnTestLines_Click"/>
+                            <TextBox x:Name="inpTestColumns" HorizontalAlignment="Left" Height="20" Margin="161,135,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" Width="30" TextAlignment="Right"/>
+                            <Button x:Name="btnTestColumns" Content="Columns" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" Width="146" Click="btnTestColumns_Click"/>
+                            <TextBox x:Name="inpTestSquares" HorizontalAlignment="Left" Height="20" Margin="161,160,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" Width="30" TextAlignment="Right"/>
+                            <Button x:Name="btnTestSquares" Content="Squares" HorizontalAlignment="Left" Margin="10,160,0,0" VerticalAlignment="Top" Width="146" Click="btnTestSquares_Click"/>
+                            <Button x:Name="btnDiagnostic" Content="Diagnostic" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="181" Click="btnDiagnostic_Click"/>
+                            <Button x:Name="btnTestRand" Content="Rand" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Width="181" Click="btnTestRand_Click"/>
+                            <Button x:Name="btnTestScale" Content="Scale" HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Width="181" Click="btnTestScale_Click"/>
+                            <TextBox x:Name="inpTestGrayScales" HorizontalAlignment="Left" Height="20" Margin="161,235,0,0" TextWrapping="Wrap" Text="8" VerticalAlignment="Top" Width="30" TextAlignment="Right"/>
+                            <Button x:Name="btnTestGrayScale" Content="Gray Scale" HorizontalAlignment="Left" Margin="10,235,0,0" VerticalAlignment="Top" Width="146" Click="btnTestGrayScale_Click"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Header="Preview" HorizontalAlignment="Left" Height="510" Margin="232,47,0,0" VerticalAlignment="Top" Width="724">
+                        <Image x:Name="imgPreview" Margin="10"/>
+                    </GroupBox>
+                    <TextBox x:Name="txtbPreviewPath" HorizontalAlignment="Left" Height="23" Margin="232,19,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="636"/>
+                    <Button x:Name="btnPreviewBrowse" Content="Browse" HorizontalAlignment="Left" Margin="873,19,0,0" VerticalAlignment="Top" Width="83" Height="23" Click="btnPreviewBrowse_Click"/>
+                    <Button x:Name="btnPrintPreview" Content="Print" HorizontalAlignment="Left" Margin="881,562,0,0" VerticalAlignment="Top" Width="75" Click="btnPrintPreview_Click"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Content="Refresh" Name="btnRefresh" HorizontalAlignment="Left" Margin="907,10,0,0" VerticalAlignment="Top" Width="75" Click="btnRefresh_Click" Height="22"/>
+        <ComboBox Name="cmbxScreenList" HorizontalAlignment="Left" Margin="66,10,0,0" VerticalAlignment="Top" Width="836" SelectionChanged="inpScreenList_SelectionChanged" 
+                  DisplayMemberPath="Ip"/>
+        <Label Content="Screen :" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
