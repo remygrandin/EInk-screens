@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Xml;
 using FastBitmapLib;
 
 namespace GrayScaleConverterLib
