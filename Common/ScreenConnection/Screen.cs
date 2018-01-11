@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Configuration;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,6 +8,11 @@ namespace ScreenConnection
 {
     public class Screen
     {
+        private static int _width = 800;
+        public static int Width => _width;
+        private static int _height = 601;
+        public static int Height => _height;
+
         // ==== Connections ====
         internal TcpClient TcpConnection = new TcpClient();
         internal Timer TimeoutTimer = new Timer();
@@ -16,7 +20,7 @@ namespace ScreenConnection
 
         public string Ip { get; set; }
 
-        internal Screen(string ip)
+        public Screen(string ip)
         {
             if(!Regex.IsMatch(ip, "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
                                    "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
@@ -37,6 +41,10 @@ namespace ScreenConnection
         }
         
         public string Mac { get; set; }
+
+        public Rotation Rotation = Rotation.DEG_0;
+        public int XPos = 0;
+        public int YPos = 0;
 
         public string Id
         {

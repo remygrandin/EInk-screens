@@ -80,7 +80,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GrayScaleConverter\GrayScaleConverter.csproj">
+    <ProjectReference Include="..\Common\GrayScaleConverter\GrayScaleConverter.csproj">
       <Project>{693bfe85-7da2-476f-95e3-801cb72d0f6e}</Project>
       <Name>GrayScaleConverter</Name>
     </ProjectReference>

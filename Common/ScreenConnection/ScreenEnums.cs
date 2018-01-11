@@ -2,6 +2,13 @@
 
 namespace ScreenConnection
 {
+    public enum Rotation
+    {
+        DEG_0,
+        DEG_90,
+        DEG_180,
+        DEG_270
+    }
     //|    7    |    6    |    5    |    4    |    3    |    2    |    1    |    0    |
     //| VPOS PG | VNEG PG |    0    | VDDH PG | VEE  PG |    0    | V3P3 EN |    0    |
     [Flags]
