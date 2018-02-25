@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrayScaleConverter", "Common\GrayScaleConverter\GrayScaleConverter.csproj", "{693BFE85-7DA2-476F-95E3-801CB72D0F6E}"
 EndProject
@@ -37,6 +37,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawfriendPonyGraphics", "DrawfriendPonyGraphics\DrawfriendPonyGraphics.csproj", "{81967A4A-C30A-43ED-AA91-2FF7778690A5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MasterControlExtScreen", "MasterControlExtScreen\MasterControlExtScreen.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreensEmulator", "ScreensEmulator\ScreensEmulator.csproj", "{930994CD-2F75-4F37-97CC-1900BF3BF278}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,6 +174,18 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Debug|ARM.Build.0 = Debug|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Debug|x86.Build.0 = Debug|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Release|Any CPU.Build.0 = Release|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Release|ARM.ActiveCfg = Release|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Release|ARM.Build.0 = Release|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Release|x86.ActiveCfg = Release|Any CPU
+		{930994CD-2F75-4F37-97CC-1900BF3BF278}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,30 @@
+﻿<Window x:Class="ScreensEmulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScreensEmulator"
+        mc:Ignorable="d"
+        Title="Screen List" Height="353.708" Width="443.432" Closing="Window_Closing">
+    <Grid>
+
+        <DataGrid x:Name="tblScreens" HorizontalAlignment="Left" 
+                  HorizontalContentAlignment="Stretch" 
+                  ColumnWidth="*" Height="274" Margin="10,10,0,0" VerticalAlignment="Top" Width="411" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+
+                <DataGridTextColumn CanUserReorder="False" Binding="{Binding Path=Id}" Header="ID" Width="200"/>
+                <DataGridTextColumn CanUserReorder="False" Binding="{Binding Path=Port}" Header="Port" Width="100"/>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Click="ShowScreenMonitor">Show/Hide</Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="New Screen" HorizontalAlignment="Left" Margin="10,289,0,0" VerticalAlignment="Top" Width="411" Click="CreateScreen"/>
+
+    </Grid>
+</Window>
