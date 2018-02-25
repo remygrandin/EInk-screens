@@ -18,6 +18,10 @@ using System.Windows.Media.Imaging;
 using GrayScaleConverterLib;
 using Microsoft.Win32;
 using Rectangle = System.Drawing.Rectangle;
+using MasterModuleCommon;
+using Point = System.Drawing.Point;
+using Rotation = ScreenConnection.Rotation;
+using Size = System.Drawing.Size;
 
 namespace MasterStandalone
 {
@@ -527,7 +531,7 @@ namespace MasterStandalone
             Bitmap bmpResized = new Bitmap(bmp, 800, 601);
 
 
-            int depth = int.Parse("8");
+            int depth = 8;
 
             GrayScaleConverter.ConvertionMethod method = GrayScaleConverter.ConvertionMethod.DecompositionMax;
             GrayScaleConverter.DitheringMethod dithering = GrayScaleConverter.DitheringMethod.Atkinson;
@@ -563,7 +567,29 @@ namespace MasterStandalone
         private void btnPrintPreview_Click(object sender, RoutedEventArgs e)
         {
             Screen screen = (Screen)cmbxScreenList.SelectedItem;
-            Connector.Action151PrintGrey(screen, grayData);
+
+            Bitmap bmp = new Bitmap(txtbPreviewPath.Text);
+
+            Point[] points = GraphicHelper.ComputeTargetPoints(new Size(800, 601), new Size(bmp.Width, bmp.Height), Rotation.DEG_0);
+
+            Bitmap bmpResized = new Bitmap(800,601);
+
+            using (Graphics gr = Graphics.FromImage(bmpResized))
+            {
+                gr.DrawImage(bmp, points);
+            }
+
+            grayData = GrayScaleConverter.ConvertToGrayscale(bmpResized, GrayScaleConverter.ConvertionMethod.AverageBT601, 8);
+
+            grayData = GrayScaleConverter.DitherSierraLight(grayData, 8, bmpResized.Width, bmpResized.Height);
+
+            grayData = GrayScaleConverter.ReverseGrayScale(grayData, 8);
+
+            grayData = GrayScaleConverter.CompactArray(grayData, 8);
+
+            screen.SendImageBuffer(8, grayData);
+
+            screen.DrawBuffer();
         }
 
         private void btnPowerRefresh_Click(object sender, RoutedEventArgs e)

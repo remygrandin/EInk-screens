@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace ScreenConnection
 {
     public class Connector
     {
-        public const int ScreenPort = 2501;
+        public const int ScreenDiscoveryPort = 2501;
         public const string DiscoveryMessage = "DISCOVERY";
         public const string EndToken = "ENDOFTRANSMISSION";
         public const string ResponsePacketStartToken = "STARTTRANSMISSION";
@@ -21,37 +22,86 @@ namespace ScreenConnection
             Dictionary<string, Screen> output = new Dictionary<string, Screen>();
             try
             {
-                IPEndPoint ep = new IPEndPoint(IPAddress.Parse("192.168.1.255"), ScreenPort);
-
-                using (var udpClient = new UdpClient())
+                List<IPEndPoint> endpoints = new List<IPEndPoint>();
+                foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    udpClient.Client.ReceiveTimeout = msDelay;
-                    udpClient.Client.ReceiveBufferSize = 64 * 1024;
-
-                    byte[] discoveryMessageByte = Encoding.ASCII.GetBytes(DiscoveryMessage);
-
-                    udpClient.Send(discoveryMessageByte, discoveryMessageByte.Length, ep);
-
-                    IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, ScreenPort);
-
-                    Thread.Sleep(msDelay);
-
-                    byte[] receiveBuffer = udpClient.Receive(ref endpoint);
-
-                    string receivedStr = Encoding.ASCII.GetString(receiveBuffer);
-
-                    foreach (string response in receivedStr.Split('|').Where(item => !String.IsNullOrWhiteSpace(item)))
+                    if (netInterface.NetworkInterfaceType == NetworkInterfaceType.TokenRing) continue;
+                    if (netInterface.NetworkInterfaceType == NetworkInterfaceType.Tunnel) continue;
+                    if (netInterface.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
+                    if (netInterface.OperationalStatus != OperationalStatus.Up) continue;
+                    IPInterfaceProperties ipProps = netInterface.GetIPProperties();
+                    
+                    IPv4InterfaceProperties ipv4prop = ipProps.GetIPv4Properties();
+                    if (ipv4prop == null)
                     {
-                        List<string> splitted = response.Split(';').ToList();
+                        continue;
+                    }
 
-                        Screen screen = new Screen(splitted[1])
+                    UnicastIPAddressInformationCollection unicastIPInfoCol = ipProps.UnicastAddresses;
+                    
+                    foreach (UnicastIPAddressInformation information in unicastIPInfoCol)
+                    {
+                        if(information.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+
+                        int addressInt = BitConverter.ToInt32(information.Address.GetAddressBytes(), 0);
+                        int maskInt = BitConverter.ToInt32(information.IPv4Mask.GetAddressBytes(), 0);
+                        int broadcastInt = addressInt | ~maskInt;
+                        IPAddress broadcast = new IPAddress(BitConverter.GetBytes(broadcastInt));
+
+                        endpoints.Add(new IPEndPoint(broadcast, ScreenDiscoveryPort));
+                    }
+
+                    
+                }
+
+                foreach (IPEndPoint ep in endpoints)
+                {
+                    try
+                    {
+
+                        using (var udpClient = new UdpClient())
                         {
-                            Id = splitted[3],
-                            Ip = splitted[1],
-                            Mac = splitted[2]
-                        };
+                            udpClient.Client.ReceiveTimeout = msDelay;
+                            udpClient.Client.ReceiveBufferSize = 64 * 1024;
 
-                        output.Add(splitted[3], screen);
+                            byte[] discoveryMessageByte = Encoding.ASCII.GetBytes(DiscoveryMessage);
+
+                            udpClient.Send(discoveryMessageByte, discoveryMessageByte.Length, ep);
+
+                            IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, ScreenDiscoveryPort);
+
+                            Thread.Sleep(msDelay);
+
+                            byte[] receiveBuffer = udpClient.Receive(ref endpoint);
+
+                            string receivedStr = Encoding.ASCII.GetString(receiveBuffer);
+
+                            // format : |DISCOVERY_RESPONSE;[device TCP IP];[device TCP port];[device MAC];[device ID]|
+
+                            foreach (string response in receivedStr.Split('|')
+                                .Where(item => !String.IsNullOrWhiteSpace(item)))
+                            {
+                                List<string> splitted = response.Split(';').ToList();
+
+                                if (!int.TryParse(splitted[2], out int outPort))
+                                {
+                                    continue;
+                                }
+
+                                Screen screen = new Screen()
+                                {
+                                    Ip = splitted[1],
+                                    Mac = splitted[3],
+                                    Port = outPort
+                                };
+                                if(!output.ContainsKey(splitted[4]))
+                                    output.Add(splitted[4], screen);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
                     }
                 }
             }
@@ -303,12 +353,20 @@ namespace ScreenConnection
             return CallAction(screen, 109, scales);
         }
 
-        public static byte[] Action151PrintGrey(Screen screen, byte[] data)
+        public static byte[] Action151SendBuffer(Screen screen, byte scalegrayScaleDepth, byte[] data)
         {
-            return CallAction(screen, 151, data);
+            byte[] fullData = new byte[data.Length + 1];
+
+            fullData[0] = scalegrayScaleDepth;
+            data.CopyTo(fullData,1);
+
+            return CallAction(screen, 151, fullData);
         }
 
-
+        public static byte[] Action155DrawBuffer(Screen screen)
+        {
+            return CallAction(screen, 155);
+        }
 
 
 
@@ -337,7 +395,7 @@ namespace ScreenConnection
             if (!screen.TcpConnection.Connected)
             {
                 screen.TcpConnection = new TcpClient();
-                screen.TcpConnection.Connect(screen.Ip, ScreenPort);
+                screen.TcpConnection.Connect(screen.Ip, screen.Port);
             }
 
             Stream stm = screen.TcpConnection.GetStream();

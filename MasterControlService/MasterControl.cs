@@ -92,18 +92,15 @@ namespace MasterControlService
 
             foreach (System.Collections.Generic.KeyValuePair<string, Screen> kvp in screens)
             {
-                logger.Info("Found a screen at " + kvp.Value.Ip);
+                logger.Info("Found a screen \"" + kvp.Value.Id + "\" at " + kvp.Value.Ip + ":" + kvp.Value.Port);
             }
 
-            for (int i = 0; i < 6; i++)
+            foreach (System.Collections.Generic.KeyValuePair<string, Screen> kvp in screens)
             {
-                screens.Add("Fake-Screen-" + i, new Screen("1.2.3.4")
-                {
-                    Mac = "01:23:45:67:89:AB"
-                });
+                logger.Info("Found a screen \"" + kvp.Value.Id + "\" at " + kvp.Value.Ip + ":" + kvp.Value.Port);
             }
 
-           
+
 
 
             // Update the service state to Running.  

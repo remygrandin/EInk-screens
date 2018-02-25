@@ -1,34 +1,18 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Timers;
 
 namespace ScreenConnection
 {
-    public class Screen
+    public class Screen : ScreenBase
     {
-        private static int _width = 800;
-        public static int Width => _width;
-        private static int _height = 601;
-        public static int Height => _height;
-
         // ==== Connections ====
         internal TcpClient TcpConnection = new TcpClient();
         internal Timer TimeoutTimer = new Timer();
 
-
-        public string Ip { get; set; }
-
-        public Screen(string ip)
+        public Screen()
         {
-            if(!Regex.IsMatch(ip, "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-                                   "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-                                   "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-                                   "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"))
-                throw new ArgumentException("IP is in invalid format");
-
-            Ip = ip;
             TimeoutTimer.Interval = 10_000; // 10 secs
             TimeoutTimer.Elapsed += TimeouTimer_Elapsed;
             TimeoutTimer.AutoReset = false;
@@ -40,86 +24,90 @@ namespace ScreenConnection
             TcpConnection.Close();
         }
         
-        public string Mac { get; set; }
-
-        public Rotation Rotation = Rotation.DEG_0;
-        public int XPos = 0;
-        public int YPos = 0;
-
-        public string Id
+        public override string Id
         {
             get => Encoding.ASCII.GetString(Connector.Action11GetId(this));
             set => Connector.Action12SetId(this, value);
         }
 
-        public void ResetId()
+        public override void ResetId()
         {
             Connector.Action13ResetId(this);
         }
 
-        public void Reboot()
+        public override void Reboot()
         {
             Connector.Action14Reboot(this);
             TcpConnection.Close();
         }
 
-        public void Shutdown()
+        public override void Shutdown()
         {
             Connector.Action15Shutdown(this);
             TcpConnection.Close();
         }
 
+        public override void SendImageBuffer(byte scalegrayScaleDepth, byte[] data)
+        {
+            Connector.Action151SendBuffer(this, scalegrayScaleDepth, data);
+        }
+
+        public override void DrawBuffer()
+        {
+            Connector.Action155DrawBuffer(this);
+        }
+
         // ==== Power ====
-        public PowerStatus GetPowerStatus()
+        public override PowerStatus GetPowerStatus()
         {
             return (PowerStatus)Connector.Action31GetPowerStatus(this)[0];
         }
 
-        public void PowerOn()
+        public override void PowerOn()
         {
             Connector.Action32PowerOn(this);
         }
 
-        public void PowerOff()
+        public override void PowerOff()
         {
             Connector.Action33PowerOff(this);
         }
 
-        public void PowerToggle()
+        public override void PowerToggle()
         {
             Connector.Action34PowerToggle(this);
         }
 
         // ==== Power Adjust ====
-        public int VCOM
+        public override int VCOM
         {
             get => BitConverter.ToInt32(Connector.Action41GetVCOM(this), 0);
             set => Connector.Action42SetVCOM(this, value);
         }
-        public int VADJ
+        public override int VADJ
         {
             get => BitConverter.ToInt32(Connector.Action43GetVADJ(this), 0);
             set => Connector.Action44SetVADJ(this, value);
         }
 
         // ==== Temperature ====
-        public sbyte Temperature => (sbyte)Connector.Action51ReadTemperature(this)[0];
+        public override sbyte Temperature => (sbyte)Connector.Action51ReadTemperature(this)[0];
 
-        public sbyte TooCold
+        public override sbyte TooCold
         {
             get => (sbyte) Connector.Action52GetTooCold(this)[0];
             set => Connector.Action53SetTooCold(this, value);
         }
 
 
-        public sbyte TooHot
+        public override sbyte TooHot
         {
             get => (sbyte)Connector.Action54GetTooHot(this)[0];
             set => Connector.Action55SetTooHot(this, value);
         }
 
         // ==== Power sequence & timing ====
-        public PowerSequence PowerUpSequence
+        public override PowerSequence PowerUpSequence
         {
             get
             {
@@ -150,7 +138,7 @@ namespace ScreenConnection
             }
         }
 
-        public PowerSequence PowerDownSequence
+        public override PowerSequence PowerDownSequence
         {
             get
             {
@@ -181,7 +169,7 @@ namespace ScreenConnection
             }
         }
 
-        public PowerUpTiming PowerUpTiming
+        public override PowerUpTiming PowerUpTiming
         {
             get
             {
@@ -208,7 +196,7 @@ namespace ScreenConnection
             }
         }
 
-        public PowerDownTiming PowerDownTiming
+        public override PowerDownTiming PowerDownTiming
         {
             get
             {

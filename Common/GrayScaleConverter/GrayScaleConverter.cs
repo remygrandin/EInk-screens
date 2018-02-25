@@ -629,6 +629,8 @@ namespace GrayScaleConverterLib
                 tempGrayPoint += 255.0 / (grayScaleDepth - 1);
             }
 
+            realGrayPoints.Reverse();
+
             Bitmap bmp = new Bitmap(width, height);
 
             using (var fastBitmap = bmp.FastLock())
@@ -670,18 +672,6 @@ namespace GrayScaleConverterLib
 
         public static byte[] CompactArray(byte[] data, int grayScaleDepth)
         {
-            Dictionary<int, int> pixPerByte = new Dictionary<int, int>()
-            {
-                {2, 8 },
-                {4, 4 },
-                {8, 2 },
-                {16, 2 },
-                {32, 1 },
-                {64, 1 },
-                {128, 1 },
-                {256, 1 }
-            };
-
             Dictionary<int, int> bitPerByte = new Dictionary<int, int>()
             {
                 {2, 1 },
@@ -694,34 +684,69 @@ namespace GrayScaleConverterLib
                 {256, 8 }
             };
 
+            int bitPerByteSelected = bitPerByte[grayScaleDepth];
 
             BitArray outputData = new BitArray(data.Length * bitPerByte[grayScaleDepth]);
 
-
-
             int offset = 0;
-
-            int rollingCount = 0;
 
             foreach (byte b in data)
             {
-                outputData[offset] = new BitArray(new byte[] { b })[0];
+                BitArray byteArray = new BitArray(new byte[] {b});
 
-
-                offset++;
-                rollingCount++;
-
-                if (rollingCount > pixPerByte[grayScaleDepth])
-                    rollingCount = 0;
+                for (int i = 0; i < bitPerByteSelected; i++)
+                {
+                    outputData[offset] = byteArray[i];
+                    offset++;
+                }
             }
 
 
             byte[] ret = new byte[(outputData.Length - 1) / 8 + 1];
             outputData.CopyTo(ret, 0);
 
-
             return ret;
 
+        }
+
+        public static byte[] DecompactArray(byte[] data, int grayScaleDepth, int size)
+        {
+            Dictionary<int, int> bitPerByte = new Dictionary<int, int>()
+            {
+                {2, 1 },
+                {4, 2 },
+                {8, 3 },
+                {16, 4 },
+                {32, 5 },
+                {64, 6 },
+                {128, 7 },
+                {256, 8 }
+            };
+
+            int bitPerByteSelected = bitPerByte[grayScaleDepth];
+
+            byte[] ret = new byte[size];
+
+            BitArray bitArray = new BitArray(data);
+
+            int offset = 0;
+
+            for(int i = 0; i < size; i++)
+            {
+                BitArray workingByte = new BitArray(bitPerByteSelected);
+                for (int j = 0; j < bitPerByteSelected; j++)
+                {
+                    workingByte[j] = bitArray[offset];
+                    offset++;
+                }
+
+                byte[] bytes = new byte[1];
+                workingByte.CopyTo(bytes, 0);
+
+                ret[i] = bytes[0];
+            }
+
+            return ret;
         }
     }
 }

@@ -426,7 +426,7 @@ public:
 
 				Screen_WriteBufferBW(I2Chandle);
 
-				write(con_handle, "DONE");
+				//write(con_handle, "DONE");
 				break;
 
 			}
@@ -524,7 +524,7 @@ public:
 				break;
 			}
 
-			// -- 22 : SetAllRegisters (17 bytes) --
+			// -- 22 : SetAllRegisters (18 bytes) --
 			case 22:
 			{
 				for (int i = 0; i <= 17; ++i)

@@ -100,6 +100,10 @@
       <Project>{693bfe85-7da2-476f-95e3-801cb72d0f6e}</Project>
       <Name>GrayScaleConverter</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\MasterModuleCommon\MasterModuleCommon.csproj">
+      <Project>{99FDA50C-19A1-4574-ADB1-862999B5352C}</Project>
+      <Name>MasterModuleCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\ScreenConnection\ScreenConnection.csproj">
       <Project>{d3dd47a1-14b8-4190-a7b2-67df3e612457}</Project>
       <Name>ScreenConnection</Name>

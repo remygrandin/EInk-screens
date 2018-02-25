@@ -94,7 +94,7 @@ private:
 			{
 			}
 			
-			std::string computedResponse = "|DISCOVERY_RESPONSE;" + outputIp + ";" + outputMac + ";" + idStr + "|";
+			std::string computedResponse = "|DISCOVERY_RESPONSE;" + outputIp + ";2501;" + outputMac + ";" + idStr + ";|";
 
 			boost::shared_ptr<std::string> message(new std::string(computedResponse));
 

@@ -867,7 +867,6 @@
                             <Button Content="Write" x:Name="btnWriteVADJ" Margin="89,38,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75" Height="23" Click="btnWriteVADJ_Click"/>
                         </Grid>
                     </GroupBox>
-                    <Button Content="Throughput" x:Name="btntestThroughput" Margin="315,280,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="74" Height="23" Click="btntestThroughput_Click"/>
 
                 </Grid>
             </TabItem>
@@ -909,7 +908,7 @@
         </TabControl>
         <Button Content="Refresh" Name="btnRefresh" HorizontalAlignment="Left" Margin="907,10,0,0" VerticalAlignment="Top" Width="75" Click="btnRefresh_Click" Height="22"/>
         <ComboBox Name="cmbxScreenList" HorizontalAlignment="Left" Margin="66,10,0,0" VerticalAlignment="Top" Width="836" SelectionChanged="inpScreenList_SelectionChanged" 
-                  DisplayMemberPath="Ip"/>
+                  />
         <Label Content="Screen :" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top"/>
 
     </Grid>
