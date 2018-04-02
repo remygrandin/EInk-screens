@@ -28,6 +28,23 @@ union ByteArrayToInteger {
 	uint32_t integer;
 };
 
+typedef struct t {
+	unsigned long tStart;
+	unsigned long tTimeout;
+};
+
+t t_funcCheckMaster = { 0, 5000 }; //Run every 5000ms
+
+bool tCheck(struct t *t) {
+	if (millis() > t->tStart + t->tTimeout)
+		return true;
+	else
+		return false;
+}
+
+void tRun(struct t *t) {
+	t->tStart = millis();
+}
 
 NextionMessage readNextionMessage() {
 
@@ -94,8 +111,23 @@ void sendNextionMessage(String message) {
 	Serial3.write(0xFF);
 }
 
-MasterResponse requestMaster(String message)
+boolean masterAlive = false;
+
+MasterResponse requestMaster(String message, unsigned long allowed_response_time = 1000)
 {
+	while (SerialUSB.available()) {  //is there anything to read?
+		char getData = SerialUSB.read();  //if yes, read it
+	}
+
+	MasterResponse response;
+
+	response.isValid = false;
+
+	if (message != "AreYouStillThere" && !masterAlive)
+	{
+		return response;
+	}
+
 	ByteArrayToInteger converter;
 	converter.integer = message.length();
 
@@ -106,19 +138,23 @@ MasterResponse requestMaster(String message)
 
 	SerialUSB.print(message);
 
-	MasterResponse response;
+
 	int expectedSize = -1;
-	sendNextionMessage("t0.txt=\"\"");
+
+
+	unsigned long maxTime = millis() + allowed_response_time;
+
 	while (true)
 	{
-		int readByte = SerialUSB.read();
+		if (millis() > maxTime)
+		{
+			return response;
+		}
 
-		
+		int readByte = SerialUSB.read();
 
 		if (readByte == -1)
 			continue;
-
-		//sendNextionMessage("t0.txt+=\" " + String((int)readByte) + "\"");
 
 		response.rawData.push_back(readByte);
 
@@ -130,14 +166,7 @@ MasterResponse requestMaster(String message)
 			converter.byteArray[3] = response.rawData.get(3);
 
 			expectedSize = converter.integer;
-			sendNextionMessage("t0.txt+=\"size " + String(expectedSize) + "\"");
 
-			/*
-			sendNextionMessage("t0.txt+=\" " + String((int)response.rawData.get(0)) + " " +
-				String((int)response.rawData.get(1)) + " " + 
-				String((int)response.rawData.get(2)) + " " + 
-				String((int)response.rawData.get(3)) + " " + "\"");
-			*/
 			response.rawData.pop_front();
 			response.rawData.pop_front();
 			response.rawData.pop_front();
@@ -146,6 +175,7 @@ MasterResponse requestMaster(String message)
 
 		if (expectedSize == response.rawData.size())
 		{
+			response.isValid = true;
 			for (int i = 0; i < response.rawData.size(); i++)
 			{
 				response.message += (char)response.rawData.get(i);
@@ -190,10 +220,30 @@ void setup() {
 	digitalWrite(RelayComputerSwitchPin, LOW);
 	digitalWrite(Relay5vGeneratorPin, LOW);
 	digitalWrite(RelayScreenPowerPin, LOW);
+
+	sendNextionMessage("txtInfo.txt=\"Ready\"");
 }
 
+void testMaster()
+{
+	MasterResponse response = requestMaster("AreYouStillThere", 100);
+
+	if (response.isValid)
+	{
+		masterAlive = true;
+	}
+	else
+	{
+		masterAlive = false;
+	}
+}
 // ==== LOOP ====
 void loop() {
+	if (tCheck(&t_funcCheckMaster)) {
+		testMaster();
+		tRun(&t_funcCheckMaster);
+	}
+
 	if (Serial3.available())
 	{
 		NextionMessage message = readNextionMessage();
@@ -220,7 +270,66 @@ void loop() {
 				String pageNb = message.args[2];
 
 				MasterResponse response = requestMaster("GetScreens;" + pageNb + ";" + condensedArgs);
-				sendNextionMessage("t0.txt=\"" + response.message + "\"");
+				if (!response.isValid)
+					sendNextionMessage("txtInfo.txt=\"Master Not connected\"");
+				else
+				{
+					sendNextionMessage("txtInfo.txt=\"Page " + response.lines[0] + "/" + response.lines[1] + " Search: \\\"" + response.lines[2] + "\\\"\"");
+
+					if (response.lines[3] == "")
+					{
+						sendNextionMessage("btnScr1.picc=blankPic.val");
+						sendNextionMessage("txtScr1ID.txt=\"\"");
+						sendNextionMessage("txtScr1IP.txt=\"\"");
+					}
+					else
+					{
+						sendNextionMessage("btnScr1.picc=pagePic.val");
+						sendNextionMessage("txtScr1ID.txt=\"" + response.lines[3] + "\"");
+						sendNextionMessage("txtScr1IP.txt=\"" + response.lines[4] + "\"");
+					}
+
+					if (response.lines[5] == "")
+					{
+						sendNextionMessage("btnScr2.picc=blankPic.val");
+						sendNextionMessage("txtScr2ID.txt=\"\"");
+						sendNextionMessage("txtScr2IP.txt=\"\"");
+					}
+					else
+					{
+						sendNextionMessage("btnScr2.picc=pagePic.val");
+						sendNextionMessage("txtScr2ID.txt=\"" + response.lines[5] + "\"");
+						sendNextionMessage("txtScr2IP.txt=\"" + response.lines[6] + "\"");
+					}
+
+					if (response.lines[7] == "")
+					{
+						sendNextionMessage("btnScr3.picc=blankPic.val");
+						sendNextionMessage("txtScr3ID.txt=\"\"");
+						sendNextionMessage("txtScr3IP.txt=\"\"");
+					}
+					else
+					{
+						sendNextionMessage("btnScr3.picc=pagePic.val");
+						sendNextionMessage("txtScr3ID.txt=\"" + response.lines[7] + "\"");
+						sendNextionMessage("txtScr3IP.txt=\"" + response.lines[8] + "\"");
+
+					}
+					if (response.lines[9] == "")
+					{
+						sendNextionMessage("btnScr4.picc=blankPic.val");
+						sendNextionMessage("txtScr4ID.txt=\"\"");
+						sendNextionMessage("txtScr4IP.txt=\"\"");
+					}
+					else
+					{
+						sendNextionMessage("btnScr4.picc=pagePic.val");
+						sendNextionMessage("txtScr4ID.txt=\"" + response.lines[9] + "\"");
+						sendNextionMessage("txtScr4IP.txt=\"" + response.lines[10] + "\"");
+					}
+
+				}
+
 			}
 		}
 		if (mainArg == "Relay")

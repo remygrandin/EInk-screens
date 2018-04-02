@@ -104,6 +104,11 @@ namespace MasterControlService
             
         }
 
+        public void Send(IEnumerable<string> data)
+        {
+            Send(String.Join("\n", data));
+        }
+
         public void Send(string data)
         {
             byte[] dataArray = Encoding.ASCII.GetBytes(data);

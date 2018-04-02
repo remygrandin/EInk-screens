@@ -11,6 +11,7 @@ using MasterModuleCommon;
 using ScreenConnection;
 using System.Xml.Serialization;
 using MasterControlService.Config;
+using Nancy.Hosting.Self;
 
 namespace MasterControlService
 {
@@ -59,6 +60,8 @@ namespace MasterControlService
             OnStart(new string[0]);
         }
 
+        public NancyHost WebServer;
+
         public List<Type> GraphicsTypes = new List<Type>();
         public List<Type> TargetsTypes = new List<Type>();
         public List<Type> TransitionsTypes = new List<Type>();
@@ -86,14 +89,27 @@ namespace MasterControlService
             // Connection to external screen
             InitExtScreen();
 
+
+            // Init Http Listener
+            logger.Info("Starting web server...");
+
+            HostConfiguration hostConfigs = new HostConfiguration
+            {
+                UrlReservations =
+                {
+                    CreateAutomatically = true
+                }
+            };
+
+            WebServer = new NancyHost(hostConfigs, new Uri("http://localhost:80"));
+
+            WebServer.Start();
+
+
+            // 
             logger.Info("Scanning for screens...");
 
             screens = ScreenConnection.Connector.Discovery(1000);
-
-            foreach (System.Collections.Generic.KeyValuePair<string, Screen> kvp in screens)
-            {
-                logger.Info("Found a screen \"" + kvp.Value.Id + "\" at " + kvp.Value.Ip + ":" + kvp.Value.Port);
-            }
 
             foreach (System.Collections.Generic.KeyValuePair<string, Screen> kvp in screens)
             {
@@ -109,9 +125,9 @@ namespace MasterControlService
 
 
 
+            /*
 
 
-            
             MasterConfig masterConfig = new MasterConfig();
             masterConfig.Screens.Add(new ScreenDescriptor()
             {
@@ -152,7 +168,7 @@ namespace MasterControlService
             provider.Init(logger, new List<MasterModuleCommon.KeyValuePair<string, string>>());
 
 
-
+            */
 
             return;
 
@@ -181,6 +197,11 @@ namespace MasterControlService
 
             }*/
 
+        }
+
+        protected override void OnStop()
+        {
+            logger.Info("Stopping...");
         }
 
         private void LoadModules(string rootModuleFolder)
@@ -308,45 +329,63 @@ namespace MasterControlService
 
             switch (requestSplitted[0])
             {
+                case "AreYouStillThere":
+                    {
+                        logger.Info("Alive");
+                        serial.Send("Yes");
+                        break;
+                    }
                 case "GetScreens":
-                {
-                    int pageSize = 4;
-                    int pageNb = Convert.ToInt32(requestSplitted[1]);
-
-                    string[] searchArgs = String.Join(";", requestSplitted.Skip(2)).ToLowerInvariant().Split(' ').ToArray();
-
-                    IEnumerable<MasterModuleCommon.KeyValuePair<string, Screen>> screenList = 
-                        screens.Select(kvp => new MasterModuleCommon.KeyValuePair<string, Screen>("".ToLowerInvariant(), kvp.Value));
-
-                    if (searchArgs.Length != 0)
                     {
-                        screenList = screenList.Where(item =>
-                            searchArgs.Any(serchedVal => item.Key.Contains(serchedVal)));
+                        int pageSize = 4;
+                        int pageNb = Convert.ToInt32(requestSplitted[1]);
+
+                        List<string> output = new List<string>();
+
+                        string[] searchArgs = String.Join(";", requestSplitted.Skip(2)).ToLowerInvariant().Split(' ').ToArray();
+
+                        List<MasterModuleCommon.KeyValuePair<string, Screen>> screenList = screens.Select(kvp => new MasterModuleCommon.KeyValuePair<string, Screen>("".ToLowerInvariant(), kvp.Value))
+                                                                                                  .ToList();
+                        if (searchArgs.Length != 0)
+                        {
+                            screenList = screenList.Where(item => searchArgs.Any(serchedVal => item.Key.Contains(serchedVal))).ToList();
+                        }
+
+                        output.Add((pageNb + 1).ToString());
+                        output.Add(Math.Ceiling(screenList.Count / (double)pageSize).ToString());
+                        output.Add(String.Join(" ", searchArgs));
+
+
+
+                        screenList = screenList.Skip(pageNb * pageSize).Take(pageSize).ToList();
+
+
+
+                        for (int i = 0; i < pageSize; i++)
+                        {
+                            if (screenList.Count() < i)
+                            {
+                                output.Add("");
+                                output.Add("NoIp");
+                            }
+                            else
+                            {
+                                output.Add(screenList[i].Key);
+                                output.Add(screenList[i].Value.Ip);
+                            }
+
+                        }
+
+                        serial.Send(output);
+
+                        break;
                     }
-
-                    screenList = screenList.Skip(pageNb * pageSize).Take(pageSize);
-
-                    List<string> output = new List<string>();
-                    for (int i = 0; i < pageSize; i++)
-                    {
-
-                    }
-
-
-
-                    serial.Send("testtest");
-
-                    break;
-                }
 
             }
 
             logger.Info("Request received : " + request);
         }
 
-        protected override void OnStop()
-        {
-            logger.Info("Stopping...");
-        }
+
     }
 }
