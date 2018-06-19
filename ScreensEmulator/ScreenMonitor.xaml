@@ -15,11 +15,25 @@
                 <Label x:Name="lblPort" Content="PORT" HorizontalAlignment="Left" Margin="232,7,0,0" VerticalAlignment="Top" Width="85" HorizontalContentAlignment="Left" />
             </Grid>
         </GroupBox>
-        <Viewbox Margin="629,10,10,10">
-            <Border BorderThickness="3" BorderBrush="#FFC3C3C3">
-                <Image x:Name="imgScreen" Stretch="None" ></Image>
-            </Border>
-        </Viewbox>
+        
+        <TabControl Margin="629,10,10,10">
+            <TabItem Header="Displayed">
+                <Viewbox Margin="10,10,10,10">
+                    <Border BorderThickness="3" BorderBrush="#FFC3C3C3">
+                        <Image x:Name="imgScreenDispalyed" Stretch="None" ></Image>
+                    </Border>
+                </Viewbox>
+            </TabItem>
+            <TabItem>
+                <Viewbox Margin="10,10,10,10">
+                    <Border BorderThickness="3" BorderBrush="#FFC3C3C3">
+                        <Image x:Name="imgScreenReady" Stretch="None" ></Image>
+                    </Border>
+                </Viewbox>
+
+            </TabItem>
+
+        </TabControl>
         <TextBox x:Name="txtbLog" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="399" Margin="280,72,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="344" AcceptsReturn="True"/>
         <DataGrid x:Name="tblActions" HorizontalAlignment="Left" Height="399" Margin="10,72,0,0" VerticalAlignment="Top" Width="265">

@@ -21,13 +21,16 @@ namespace ScreensEmulator
     /// </summary>
     public partial class ScreenMonitor : Window
     {
-        public static string endToken = "ENDOFTRANSMISSION";
-        public static string packetStartToken = "STARTTRANSMISSION";
+        public static string EndToken = "ENDOFTRANSMISSION";
+        public static string PacketStartToken = "STARTTRANSMISSION";
 
         public ScreenBase Screen;
 
-        public byte[] screenBuffer = new byte[ScreenConnection.Screen.Width * ScreenConnection.Screen.Height];
-        public byte grayScaleDepth = 8;
+        public byte[] ReadyScreenBuffer = new byte[ScreenConnection.Screen.Width * ScreenConnection.Screen.Height];
+        public byte ReadyGrayScaleDepth = 8;
+
+        public byte[] DisplayedScreenBuffer = new byte[ScreenConnection.Screen.Width * ScreenConnection.Screen.Height];
+        public byte DisplayedGrayScaleDepth = 8;
 
         public TcpListener server;
 
@@ -115,9 +118,9 @@ namespace ScreensEmulator
 
                         data.AddRange(subBuffer.Take(readBytes).ToArray());
 
-                        if (data.Count >= endToken.Length + 5)
+                        if (data.Count >= EndToken.Length + 5)
                         {
-                            if (System.Text.Encoding.ASCII.GetString(data.ToArray()).EndsWith(endToken))
+                            if (System.Text.Encoding.ASCII.GetString(data.ToArray()).EndsWith(EndToken))
                             {
                                 log("End token received, decoding message ...");
 
@@ -239,6 +242,9 @@ namespace ScreensEmulator
                     {
                         timeAction("07 : Diag");
                         log("Server requested Diag Screen");
+
+                        // Todo : screen debug draw
+
                         break;
                     }
 
@@ -539,8 +545,9 @@ namespace ScreensEmulator
                         timeAction("101 : Test White");
                         log("Server requested Test screen White");
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
                         break;
                     }
@@ -551,8 +558,9 @@ namespace ScreensEmulator
                         timeAction("102 : Test Black");
                         log("Server requested Test screen Black");
 
-                        screenBuffer = Enumerable.Repeat<byte>(1, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(1, ReadyScreenBuffer.Length).ToArray();
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -564,16 +572,19 @@ namespace ScreensEmulator
                         timeAction("103 : Test White / Black / White");
                         log("Server requested Test screen Black");
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
-                        screenBuffer = Enumerable.Repeat<byte>(1, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(1, ReadyScreenBuffer.Length).ToArray();
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -597,7 +608,7 @@ namespace ScreensEmulator
 
                         int offset = 0;
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
                         for (int i = 0; i < ScreenConnection.ScreenBase.Height; i++)
                         {
@@ -605,7 +616,7 @@ namespace ScreensEmulator
                             bool lineVal = false;
                             for (int j = 0; j < ScreenConnection.ScreenBase.Width; j++)
                             {
-                                screenBuffer[offset++] = (byte)(lineVal ? 1 : 0);
+                                ReadyScreenBuffer[offset++] = (byte)(lineVal ? 1 : 0);
 
                                 lineCount++;
                                 if (lineCount >= lineSize)
@@ -617,6 +628,7 @@ namespace ScreensEmulator
 
                         }
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -640,7 +652,7 @@ namespace ScreensEmulator
 
                         int offset = 0;
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
                         int colCount = 0;
                         bool colVal = false;
@@ -649,7 +661,7 @@ namespace ScreensEmulator
                         {
                             for (int j = 0; j < ScreenConnection.ScreenBase.Width; j++)
                             {
-                                screenBuffer[offset++] = (byte)(colVal ? 1 : 0);
+                                ReadyScreenBuffer[offset++] = (byte)(colVal ? 1 : 0);
                             }
 
                             colCount++;
@@ -661,6 +673,7 @@ namespace ScreensEmulator
 
                         }
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -684,7 +697,7 @@ namespace ScreensEmulator
 
                         int offset = 0;
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
                         int colCount = 0;
                         bool colVal = false;
@@ -696,7 +709,7 @@ namespace ScreensEmulator
 
                             for (int j = 0; j < ScreenConnection.ScreenBase.Width; j++)
                             {
-                                screenBuffer[offset++] = (byte)(!lineVal != !colVal ? 1 : 0);
+                                ReadyScreenBuffer[offset++] = (byte)(!lineVal != !colVal ? 1 : 0);
 
                                 lineCount++;
                                 if (lineCount >= squareSize)
@@ -715,6 +728,7 @@ namespace ScreensEmulator
 
                         }
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -726,15 +740,16 @@ namespace ScreensEmulator
                         timeAction("107 : Test rand");
                         log("Server requested Test screen rand");
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
 
                         Random rnd = new Random();
 
-                        for (int i = 0; i < screenBuffer.Length; i++)
+                        for (int i = 0; i < ReadyScreenBuffer.Length; i++)
                         {
-                            screenBuffer[i] = (byte)rnd.Next(0, 2);
+                            ReadyScreenBuffer[i] = (byte)rnd.Next(0, 2);
                         }
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -746,7 +761,8 @@ namespace ScreensEmulator
                         timeAction("108 : Test scale");
                         log("Server requested Test screen scale");
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
+                        ReadyGrayScaleDepth = 2;
 
                         int offset = 0;
 
@@ -754,7 +770,7 @@ namespace ScreensEmulator
                         {
                             for (int j = 0; j < ScreenConnection.ScreenBase.Width; j++)
                             {
-                                screenBuffer[offset++] = (byte)(j - 21 <= i * 2 && j > 20 ? 1 : 0);
+                                ReadyScreenBuffer[offset++] = (byte)(j - 21 <= i * 2 && j > 20 ? 1 : 0);
                             }
                         }
 
@@ -762,10 +778,11 @@ namespace ScreensEmulator
                         {
                             for (int j = 0; j < ScreenConnection.ScreenBase.Width; j++)
                             {
-                                screenBuffer[offset++] = (byte)(j - 21 <= i * 2 && j > 20 ? 1 : 0);
+                                ReadyScreenBuffer[offset++] = (byte)(j - 21 <= i * 2 && j > 20 ? 1 : 0);
                             }
                         }
 
+                        MigrateBuffer();
                         ScreenWriteBufferBW();
 
                         break;
@@ -777,16 +794,21 @@ namespace ScreensEmulator
                         timeAction("109 : Test Grayscale");
                         log("Server requested Test screen Grayscale");
 
-                        screenBuffer = Enumerable.Repeat<byte>(0, screenBuffer.Length).ToArray();
+                        ReadyScreenBuffer = Enumerable.Repeat<byte>(0, ReadyScreenBuffer.Length).ToArray();
+
+                        if (data.Count == 0)
+                            ReadyGrayScaleDepth = 8;
+                        else
+                            ReadyGrayScaleDepth = data[0];
 
                         int offset = 0;
 
                         for (int i = 0; i < ScreenConnection.ScreenBase.Height; i++)
                         {
-                            int colVal = (i - 2) / (600 / 8);
+                            int colVal = (i - 2) / (600 / ReadyGrayScaleDepth);
                             for (int j = 0; j < ScreenConnection.ScreenBase.Width; j++)
                             {
-                                screenBuffer[offset++] = (byte)colVal;
+                                ReadyScreenBuffer[offset++] = (byte)colVal;
                             }
                         }
 
@@ -804,9 +826,12 @@ namespace ScreensEmulator
 
                         this.Dispatcher.Invoke((Action)(() =>
                         {
-                            grayScaleDepth = data[0];
-                            screenBuffer = GrayScaleConverter.DecompactArray(data.Skip(1).ToArray(), grayScaleDepth, (int)(ScreenBase.Width * ScreenBase.Height));
+                            ReadyGrayScaleDepth = data[0];
+                            ReadyScreenBuffer = GrayScaleConverter.DecompactArray(data.Skip(1).ToArray(), ReadyGrayScaleDepth, (int)(ScreenBase.Width * ScreenBase.Height));
+                            ScreenWriteBufferReadyGrayScale();
                         }));
+
+                        
 
                         break;
                     }
@@ -816,6 +841,7 @@ namespace ScreensEmulator
                         timeAction("155 : Draw");
                         log("Server Started draw");
 
+                        MigrateBuffer();
                         ScreenWriteBufferGrayScale();
 
                         break;
@@ -826,6 +852,49 @@ namespace ScreensEmulator
             log("End of processing request");
         }
 
+        private void ScreenWriteBufferReadyBW()
+        {
+            Bitmap bmp = new Bitmap(ScreenConnection.ScreenBase.Width, ScreenConnection.ScreenBase.Height);
+
+            Color white = Color.White;
+            Color black = Color.Black;
+
+            using (var fastBitmap = bmp.FastLock())
+            {
+                int counter = 0;
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    for (int x = 0; x < bmp.Width; x++)
+                    {
+                        fastBitmap.SetPixel(x, y, ReadyScreenBuffer[counter] == 0 ? white : black);
+                        counter++;
+                    }
+                }
+            }
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                imgScreenReady.Source = BitmapToImageSource(bmp);
+            }));
+
+        }
+
+        
+        private void ScreenWriteBufferReadyGrayScale()
+        {
+            Bitmap bmp = GrayScaleConverter.GrayToBitmap(ReadyScreenBuffer, ScreenConnection.Screen.Width, ScreenConnection.Screen.Height, ReadyGrayScaleDepth);
+
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                imgScreenReady.Source = BitmapToImageSource(bmp);
+            }));
+
+        }
+
+        private void MigrateBuffer()
+        {
+            DisplayedScreenBuffer = ReadyScreenBuffer.ToArray();
+            DisplayedGrayScaleDepth = ReadyGrayScaleDepth;
+        }
 
         private void ScreenWriteBufferBW()
         {
@@ -841,25 +910,25 @@ namespace ScreensEmulator
                 {
                     for (int x = 0; x < bmp.Width; x++)
                     {
-                        fastBitmap.SetPixel(x, y, screenBuffer[counter] == 0 ? white : black);
+                        fastBitmap.SetPixel(x, y, DisplayedScreenBuffer[counter] == 0 ? white : black);
                         counter++;
                     }
                 }
             }
             this.Dispatcher.Invoke((Action)(() =>
             {
-                imgScreen.Source = BitmapToImageSource(bmp);
+                imgScreenDispalyed.Source = BitmapToImageSource(bmp);
             }));
 
         }
 
         private void ScreenWriteBufferGrayScale()
         {
-            Bitmap bmp = GrayScaleConverter.GrayToBitmap(screenBuffer, ScreenConnection.Screen.Width, ScreenConnection.Screen.Height, grayScaleDepth);
+            Bitmap bmp = GrayScaleConverter.GrayToBitmap(DisplayedScreenBuffer, ScreenConnection.Screen.Width, ScreenConnection.Screen.Height, DisplayedGrayScaleDepth);
 
             this.Dispatcher.Invoke((Action)(() =>
             {
-                imgScreen.Source = BitmapToImageSource(bmp);
+                imgScreenDispalyed.Source = BitmapToImageSource(bmp);
             }));
 
         }
@@ -892,7 +961,7 @@ namespace ScreensEmulator
 
             List<byte> message = new List<byte>();
 
-            message.AddRange(System.Text.Encoding.ASCII.GetBytes(packetStartToken));
+            message.AddRange(System.Text.Encoding.ASCII.GetBytes(PacketStartToken));
 
             message.AddRange(BitConverter.GetBytes(data.Length));
 
@@ -908,7 +977,7 @@ namespace ScreensEmulator
 
             List<byte> message = new List<byte>();
 
-            message.AddRange(System.Text.Encoding.ASCII.GetBytes(endToken));
+            message.AddRange(System.Text.Encoding.ASCII.GetBytes(EndToken));
 
             stm.Write(message.ToArray(), 0, message.Count);
         }

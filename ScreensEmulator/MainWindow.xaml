@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScreensEmulator"
         mc:Ignorable="d"
-        Title="Screen List" Height="353.708" Width="443.432" Closing="Window_Closing">
+        Title="Screen List" Height="370.375" Width="443.432" Closing="Window_Closing">
     <Grid>
 
         <DataGrid x:Name="tblScreens" HorizontalAlignment="Left" 
                   HorizontalContentAlignment="Stretch" 
-                  ColumnWidth="*" Height="274" Margin="10,10,0,0" VerticalAlignment="Top" Width="411" AutoGenerateColumns="False">
+                  ColumnWidth="*" Height="274" Margin="10,10,0,0" VerticalAlignment="Top" Width="411" AutoGenerateColumns="False" CanUserResizeRows="False">
             <DataGrid.Columns>
 
                 <DataGridTextColumn CanUserReorder="False" Binding="{Binding Path=Id}" Header="ID" Width="200"/>
@@ -24,7 +24,8 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Content="New Screen" HorizontalAlignment="Left" Margin="10,289,0,0" VerticalAlignment="Top" Width="411" Click="CreateScreen"/>
+        <Button x:Name="btnNewScreen" Content="New Screen" HorizontalAlignment="Left" Margin="10,289,0,0" VerticalAlignment="Top" Width="411" Click="CreateScreen"/>
+        <Button x:Name="btnShowMegaScreen" Content="Show Mega" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="411" Click="CreateScreen"/>
 
     </Grid>
 </Window>
