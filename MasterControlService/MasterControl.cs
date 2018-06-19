@@ -40,14 +40,19 @@ namespace MasterControlService
 
     public partial class MasterControl : ServiceBase
     {
-        private Logger logger;
+        private Logger allLogger;
+        private Logger serviceLogger;
+        private Logger extScreenLogger;
+        private Logger webLogger;
 
         public MasterControl()
         {
             InitializeComponent();
 
-            logger = LogManager.GetLogger("GlobalLog");
-
+            allLogger = LogManager.GetLogger("AllLog");
+            serviceLogger = LogManager.GetLogger("ServiceLog");
+            extScreenLogger = LogManager.GetLogger("ExtScreenLog");
+            webLogger = LogManager.GetLogger("WebLog");
 
 
         }
@@ -70,12 +75,14 @@ namespace MasterControlService
 
         protected override void OnStart(string[] args)
         {
-            logger.Info("");
-            logger.Info("");
-            logger.Info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-            logger.Info("=-=-=-=-=-=-=-=-=-=- Master Control Service =-=-=-=-=-=-=-=-=-=-=");
-            logger.Info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-            logger.Info("");
+            allLogger.Info("");
+            allLogger.Info("");
+            allLogger.Info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+            allLogger.Info("=-=-=-=-=-=-=-=-=-=- Master Control Service =-=-=-=-=-=-=-=-=-=-=");
+            allLogger.Info("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+            allLogger.Info("");
+            allLogger.Info("Initializing At " + DateTime.Now.ToString("O"));
+            allLogger.Info("");
 
             // Update the service state to Start Pending.  
             ServiceStatus serviceStatus = new ServiceStatus();
@@ -91,7 +98,7 @@ namespace MasterControlService
 
 
             // Init Http Listener
-            logger.Info("Starting web server...");
+            webLogger.Info("Starting web server...");
 
             HostConfiguration hostConfigs = new HostConfiguration
             {
@@ -107,13 +114,13 @@ namespace MasterControlService
 
 
             // 
-            logger.Info("Scanning for screens...");
+            serviceLogger.Info("Scanning for screens...");
 
             screens = ScreenConnection.Connector.Discovery(1000);
 
             foreach (System.Collections.Generic.KeyValuePair<string, Screen> kvp in screens)
             {
-                logger.Info("Found a screen \"" + kvp.Value.Id + "\" at " + kvp.Value.Ip + ":" + kvp.Value.Port);
+                serviceLogger.Info("Found a screen \"" + kvp.Value.Id + "\" at " + kvp.Value.Ip + ":" + kvp.Value.Port);
             }
 
 
@@ -201,88 +208,94 @@ namespace MasterControlService
 
         protected override void OnStop()
         {
-            logger.Info("Stopping...");
+            allLogger.Info("Stopping...");
+            allLogger.Info("");
+            allLogger.Info("");
+            allLogger.Info("");
+
+            LogManager.Flush();
+            LogManager.Shutdown();
         }
 
         private void LoadModules(string rootModuleFolder)
         {
-            logger.Info("======== Module Import ========");
-            logger.Info("---- Graphics Modules Import ----");
+            serviceLogger.Info("======== Module Import ========");
+            serviceLogger.Info("---- Graphics Modules Import ----");
 
             string lookupFolder = Path.Combine(rootModuleFolder, @"Graphics\");
 
-            logger.Info("Looking for graphics dll modules in \"" + lookupFolder + "\"");
+            serviceLogger.Info("Looking for graphics dll modules in \"" + lookupFolder + "\"");
             GraphicsTypes = new List<Type>();
 
             if (!Directory.Exists(lookupFolder))
             {
-                logger.Warn("    = Folder don't exist !");
+                serviceLogger.Warn("    = Folder don't exist !");
             }
             else
             {
                 foreach (string dllPath in Directory.GetFiles(lookupFolder, "*.dll"))
                 {
-                    logger.Info("    = Loading dll : " + dllPath);
+                    serviceLogger.Info("    = Loading dll : " + dllPath);
                     Assembly asm = Assembly.LoadFrom(dllPath);
 
                     foreach (Type type in asm.GetTypes().Where(myType =>
                         myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(GraphicProvider))))
                     {
-                        logger.Info("        - Found \"" + type.Name + "\"");
+                        serviceLogger.Info("        - Found \"" + type.Name + "\"");
                         GraphicsTypes.Add(type);
                     }
                 }
             }
 
-            logger.Info("---- Targets Modules Import ----");
+            serviceLogger.Info("---- Targets Modules Import ----");
 
             lookupFolder = Path.Combine(rootModuleFolder, @"Targets\");
 
-            logger.Info("Looking for targets dll modules in \"" + lookupFolder + "\"");
+            serviceLogger.Info("Looking for targets dll modules in \"" + lookupFolder + "\"");
             TargetsTypes = new List<Type>();
 
             if (!Directory.Exists(lookupFolder))
             {
-                logger.Warn("    = Folder don't exist !");
+                serviceLogger.Warn("    = Folder don't exist !");
             }
             else
             {
                 foreach (string dllPath in Directory.GetFiles(lookupFolder, "*.dll"))
                 {
-                    logger.Info("    = Loading dll : " + dllPath);
+                    serviceLogger.Info("    = Loading dll : " + dllPath);
                     Assembly asm = Assembly.LoadFrom(dllPath);
 
                     foreach (Type type in asm.GetTypes().Where(myType =>
                         myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(TargetProvider))))
                     {
-                        logger.Info("        - Found \"" + type.Name + "\"");
+                        serviceLogger.Info("        - Found \"" + type.Name + "\"");
                         TargetsTypes.Add(type);
                     }
                 }
             }
 
-            logger.Info("---- Transitions Modules Import ----");
+            serviceLogger.Info("---- Transitions Modules Import ----");
 
             lookupFolder = Path.Combine(rootModuleFolder, @"Transitions\");
 
-            logger.Info("Looking for transitions dll modules in \"" + lookupFolder + "\"");
+            serviceLogger.Info("Looking for transitions dll modules in \"" + lookupFolder + "\"");
             TransitionsTypes = new List<Type>();
 
             if (!Directory.Exists(lookupFolder))
             {
-                logger.Warn("    = Folder don't exist !");
+                serviceLogger.Warn("    = Folder don't exist !");
             }
             else
             {
                 foreach (string dllPath in Directory.GetFiles(lookupFolder, "*.dll"))
                 {
-                    logger.Info("    = Loading dll : " + dllPath);
+                    serviceLogger.Info("    = Loading dll : " + dllPath);
                     Assembly asm = Assembly.LoadFrom(dllPath);
 
                     foreach (Type type in asm.GetTypes().Where(myType =>
                         myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(TransitionProvider))))
                     {
-                        logger.Info("        - Found \"" + type.Name + "\"");
+                        serviceLogger.Info("        - Found \"" + type.Name + "\"");
                         TransitionsTypes.Add(type);
                     }
                 }
@@ -294,30 +307,32 @@ namespace MasterControlService
 
         private void InitExtScreen()
         {
-            serial = new ExtScreenSerial(logger);
+            extScreenLogger.Info("======== External Screen Initialization ========");
+
+            serial = new ExtScreenSerial(extScreenLogger);
 
             serialInitTimer.Interval = 5000;
             serialInitTimer.AutoReset = false;
             serialInitTimer.Elapsed += SerialInitTimer_Elapsed;
 
             SerialInitTimer_Elapsed(null, null);
-
-
         }
 
         private void SerialInitTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            logger.Info("======== External Screen Initialization ========");
-            serial = new ExtScreenSerial(logger);
+
+            extScreenLogger.Info("Trying to connect External Screen");
+            serial = new ExtScreenSerial(extScreenLogger);
             if (serial.Locate())
             {
+                serialInitTimer.Stop();
+                extScreenLogger.Info("External screen found on COM port " + serial.SerilPortName);
                 serial.Connect();
                 serial.DataReceived += Serial_DataReceived;
-                serialInitTimer.Stop();
             }
             else
             {
-                logger.Info("External screen not found, retrying in 5 second");
+                extScreenLogger.Warn("External screen not found, retrying in 5 second");
                 serialInitTimer.Start();
             }
         }
@@ -327,11 +342,13 @@ namespace MasterControlService
         {
             string[] requestSplitted = request.Split(';');
 
+            extScreenLogger.Info("Request received : " + request);
+
             switch (requestSplitted[0])
             {
                 case "AreYouStillThere":
                     {
-                        logger.Info("Alive");
+                        extScreenLogger.Info("Alive");
                         serial.Send("Yes");
                         break;
                     }
@@ -383,7 +400,7 @@ namespace MasterControlService
 
             }
 
-            logger.Info("Request received : " + request);
+            
         }
 
 

@@ -15,6 +15,8 @@ namespace MasterControlService
         private Logger _logger = null;
         private ComPort _connectionPort = null;
         private SerialPort _comPort;
+
+        public string SerilPortName => _comPort == null ? "None" : _comPort.PortName;
         public bool IsConnected = false;
 
         public ExtScreenSerial(Logger logger)
