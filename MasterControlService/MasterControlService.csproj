@@ -207,6 +207,8 @@
     <Content Include="Web\Static\assets\demo\default\media\img\misc\notification_bg.jpg" />
     <Content Include="Web\Static\assets\demo\default\media\img\misc\quick_actions_bg.jpg" />
     <Content Include="Web\Static\assets\demo\default\media\img\misc\user_profile_bg.jpg" />
+    <Content Include="Web\Static\assets\page\config\screens.css" />
+    <Content Include="Web\Static\assets\page\config\screens.js" />
     <Content Include="Web\Static\assets\page\login\login.css" />
     <Content Include="Web\Static\assets\page\login\login.js" />
     <Content Include="Web\Static\assets\snippets\pages\user\login.js" />
@@ -352,6 +354,7 @@
     <Content Include="Web\Static\components\utils\session-timeout.html" />
     <Content Include="Web\Static\components\widgets\chart.html" />
     <Content Include="Web\Static\components\widgets\general.html" />
+    <Content Include="Web\Static\config\screens.html" />
     <Content Include="Web\Static\header\actions.html" />
     <Content Include="Web\Static\header\profile.html" />
     <Content Include="Web\Static\Index.html" />
@@ -429,8 +432,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>RD /S /Q $(TargetDir)WebStatic
-mkdir $(TargetDir)WebStatic\
-XCOPY "$(ProjectDir)Web\Static" "$(TargetDir)WebStatic\" /S /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
