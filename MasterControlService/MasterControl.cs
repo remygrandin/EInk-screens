@@ -11,6 +11,7 @@ using MasterModuleCommon;
 using ScreenConnection;
 using System.Xml.Serialization;
 using MasterControlService.Config;
+using MasterControlService.Web;
 using Nancy.Hosting.Self;
 
 namespace MasterControlService
@@ -108,10 +109,14 @@ namespace MasterControlService
                 }
             };
 
-            WebServer = new NancyHost(hostConfigs, new Uri("http://localhost:80"));
+            HttpServerStatic.WebLogger = webLogger;
+            Uri webUri = new Uri("http://localhost:80");
+            webLogger.Info("Starting web server on " + webUri.ToString());
 
+            WebServer = new NancyHost(hostConfigs, webUri);
             WebServer.Start();
 
+            webLogger.Info("Started !");
 
             // 
             serviceLogger.Info("Scanning for screens...");

@@ -3,12 +3,17 @@ using System.IO;
 using System.Reflection;
 using Nancy;
 using Nancy.Responses;
+using NLog;
 
 namespace MasterControlService.Web
 {
+    /// <summary>
+    /// Deliver all static files
+    /// </summary>
     public class HttpServerStatic : NancyModule
     {
         public static string StaticRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\WebStatic";
+        public static Logger WebLogger;
 
         public HttpServerStatic()
         {
@@ -27,7 +32,7 @@ namespace MasterControlService.Web
                 response.WithStatusCode(HttpStatusCode.Forbidden);
 
                 response.ReasonPhrase = "Illegal Path";
-
+                WebLogger.Error("[403] Client " + this.Request.UserHostAddress + " tried to access illegal path : " + fullPath);
                 return response;
             }
 
@@ -43,6 +48,7 @@ namespace MasterControlService.Web
                         {
                             indexFound = true;
                             fullPath = Path.Combine(fullPath, indexFile);
+                            WebLogger.Info("[200] Client " + this.Request.UserHostAddress + " requested  : " + (string)parameters.Path);
                             break;
                         }
                     }
@@ -54,7 +60,7 @@ namespace MasterControlService.Web
                     response.WithStatusCode(HttpStatusCode.NotFound);
 
                     response.ReasonPhrase = "FIle Not Found";
-
+                    WebLogger.Warn("[404] Client " + this.Request.UserHostAddress + " requested unknown file : " + (string)parameters.Path);
                     return response;
                 }
             }
@@ -64,6 +70,8 @@ namespace MasterControlService.Web
             var file = new FileStream(fullPath, FileMode.Open);
 
             response = new StreamResponse(() => file, MimeTypes.GetMimeType(fileName));
+
+            WebLogger.Info("[200] Client " + this.Request.UserHostAddress + " requested  : " + (string)parameters.Path);
 
             return response;
         }
