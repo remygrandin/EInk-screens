@@ -11,7 +11,6 @@ var ScreenConfig = function () {
         this.RealRotation = rotation;
         this.RealMargin = margin;
 
-        this.on("click", this.handleClick);
         this.on("rollover", this.handleRollOver);
         this.on("rollout", this.handleRollOut);
         this.on("mousedown", this.handleMousedown);
@@ -94,7 +93,7 @@ var ScreenConfig = function () {
                 this.idText.set({ x: this.RealWidth / 2 * -1, y: this.RealHeight / 2 * -1 });
                 break;
             case 270:
-                area = new createjs.Graphics.RoundRect(this.RealHeight * -1, this.RealWidth * -1, this.RealHeight, this.RealWidth, roundness, roundness, roundness, roundness);
+                area = new createjs.Graphics.RoundRect(0, this.RealWidth * -1, this.RealHeight, this.RealWidth, roundness, roundness, roundness, roundness);
                 this.idText.set({ x: this.RealHeight / 2, y: this.RealWidth / 2 * -1 });
                 break;
 
@@ -152,24 +151,25 @@ var ScreenConfig = function () {
         this.marginBorder.visible = this.showBorder || isSelected;
     }
 
-    p.handleClick = function () {
-        selectedScreen = this;
-        $.each(this.parent.children, function(index, value) {
-            value.backgroundSelected.visible = false;
-        });
-        this.backgroundSelected.visible = true;
-    }
-
     p.moveOffsetX = null;
     p.moveOffsetY = null;
 
     p.handleMousedown = function (evt) {
+        selectedScreen = this;
+        $.each(this.parent.children, function (index, value) {
+            value.backgroundSelected.visible = false;
+        });
+        this.backgroundSelected.visible = true;
+
         this.moveOffsetX = evt.localX;
         this.moveOffsetY = evt.localY;
 
         this.parent.sortChildren(function (obj1, obj2) {
             return (obj1.moveOffsetX != null || obj1.moveOffsetY != null);
         });
+
+
+        updatePropertiesDisplay();
     }
 
     p.handlePressup = function (evt) {
@@ -184,6 +184,7 @@ var ScreenConfig = function () {
         this.y = this.RealY = Math.round(parentCoord.y - this.moveOffsetY);
 
         updateContainerScale();
+        updatePropertiesDisplay();
     };
 
     let baseScreen = createjs.promote(Screen, "Container");
@@ -192,6 +193,90 @@ var ScreenConfig = function () {
     var container;
     var containerBorder;
     var containerMargin = 10;
+
+    function updatePropertiesDisplay() {
+        $("#inpScrId").val(selectedScreen.Id);
+        $("#inpScrX").val(selectedScreen.RealX);
+        $("#inpScrY").val(selectedScreen.RealY);
+        $("#inpScrRot").val(selectedScreen.RealRotation);
+    }
+
+    $("#inpScrId").on('blur', function () {
+        if (selectedScreen != null) {
+            selectedScreen.Id = $("#inpScrId").val();
+            selectedScreen.RealX = parseInt($("#inpScrX").val());
+            selectedScreen.RealY = parseInt($("#inpScrY").val());
+            selectedScreen.RealRotation = parseInt($("#inpScrRot").val());
+
+            selectedScreen.setup();
+
+        }
+    });
+
+    $("#inpScrX, #inpScrY, #inpScrRot").on('keyup input change', function() {
+        if (selectedScreen != null) {
+            selectedScreen.Id = $("#inpScrId").val();
+            selectedScreen.RealX = parseInt($("#inpScrX").val());
+            selectedScreen.RealY = parseInt($("#inpScrY").val());
+            selectedScreen.RealRotation = parseInt($("#inpScrRot").val());
+
+            selectedScreen.setup();
+        }
+    });
+
+    var shiftStep = 20;
+
+    $(document).on("keydown", function (e) {
+        if (selectedScreen != null) {
+            if ($.inArray(e.target.tagName, ["INPUT", "SELECT"]) == -1) {
+                let key = e.keyCode;
+
+                if ($.inArray(key, [37, 38, 39, 40]) == -1)
+                    return;
+
+                if (!e.shiftKey) {
+
+                    switch (key) {
+                    case 37: // left
+                        selectedScreen.RealX--;
+                        break;
+                    case 38: // up
+                        selectedScreen.RealY--;
+                        break;
+                    case 39: // right
+                        selectedScreen.RealX++;
+                        break;
+                    case 40: // down
+                        selectedScreen.RealY++;
+                        break;
+                    }
+                    
+                } else {
+                    switch (key) {
+                    case 37: // left
+                            selectedScreen.RealX = Math.round((selectedScreen.RealX - shiftStep) / shiftStep) * shiftStep;
+                        break;
+                    case 38: // up
+                            selectedScreen.RealY = Math.round((selectedScreen.RealY - shiftStep) / shiftStep) * shiftStep;
+                        break;
+                    case 39: // right
+                            selectedScreen.RealX = Math.round((selectedScreen.RealX + shiftStep) / shiftStep) * shiftStep;
+                        break;
+                    case 40: // down
+                            selectedScreen.RealY = Math.round((selectedScreen.RealY + shiftStep) / shiftStep) * shiftStep;
+                        break;
+                    }
+                    
+                }
+                selectedScreen.setup();
+                e.preventDefault();
+
+                updateContainerScale();
+                updatePropertiesDisplay();
+            }
+        }
+    });
+
 
     var initCanvas = function () {
         $("#screenPlacement").attr("width", "");
@@ -211,15 +296,7 @@ var ScreenConfig = function () {
         stage.addChild(container);
 
 
-
-
-
-
-        let scr1 = container.addChild(new baseScreen("id1", 0, 0, 800, 600, 0, 100));
-
-        let scr2 = container.addChild(new baseScreen("id2", 4000, 1000, 800, 600, 180, 100));
-
-        let scr3 = container.addChild(new baseScreen("id3", 2000, 500, 800, 600, 90, 100));
+        importScreenList(null);
 
         updateContainerScale();
 
@@ -239,6 +316,55 @@ var ScreenConfig = function () {
         }).observe($("#screenPlacement")[0]);
 
     }
+
+    function importScreenList(screenList) {
+        screenList = [
+            {
+                Id: "id1",
+                X: 0,
+                Y: 0,
+                Width: 800,
+                Height: 600,
+                Rotation: 0,
+                Margin: 100
+            },
+            {
+                Id: "id2",
+                X: 4000,
+                Y: 1000,
+                Width: 800,
+                Height: 600,
+                Rotation: 180,
+                Margin: 100
+            },
+            {
+                Id: "id3",
+                X: 2000,
+                Y: 500,
+                Width: 800,
+                Height: 600,
+                Rotation: 90,
+                Margin: 100
+            }
+        ];
+
+        $("#tblScreens tbody").empty();
+
+        $.each(screenList, function(index, value) {
+
+
+            container.addChild(new baseScreen(value.Id, value.X, value.Y, value.Width, value.Height, value.Rotation, value.Margin));
+
+            $("#tblScreens tbody").append("<tr scrId=\"" + value.Id + "\">" +
+                "<td>" + value.Id + "</td>" +
+                "<td>" + value.X + "</td>" +
+                "<td>" + value.Y + "</td>" +
+                "<td>" + value.Rotation + "°</td>" +
+                "</tr>");
+        });
+    }
+
+
 
     var updateContainerScale = function () {
         let TLX = 0;
